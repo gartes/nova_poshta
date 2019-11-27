@@ -13,7 +13,9 @@
 <!--    </languages>-->
     <files>
         <filename plugin="nova_pochta">nova_pochta.php</filename>
-        <folder>nova_poshta-master</folder>
+        <folder>language</folder>
+        <folder>tmpl</folder>
+<!--        <folder>nova_poshta-master</folder>-->
     </files>
 
     <vmconfig>
