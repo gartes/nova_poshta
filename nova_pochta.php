@@ -23,9 +23,14 @@
 	class plgVmShipmentNova_pochta extends vmPSPlugin
 	{
 		
+		private $Helper ; 
+		
 		/**
 		 * @param   object  $subject
 		 * @param   array   $config
+		 *
+		 * @throws Exception
+		 * @since 3.9
 		 */
 		function __construct ( & $subject , $config )
 		{
@@ -43,33 +48,45 @@
 			$this->setConfigParameterable( $this->_configTableFieldName , $varsToPush );
 			$this->setConvertable( [ 'min_amount' , 'max_amount' , 'shipment_cost' , 'package_fee' ] );
 			
+			JLoader::registerNamespace('Plg\Np',JPATH_PLUGINS.'/vmshipment/nova_pochta/helpers',$reset=false,$prepend=false,$type='psr4');
+			$this->Helper = \Plg\Np\Helper::instance();
+			
+//			echo'<pre>';print_r( $this->Helper );echo'</pre>'.__FILE__.' '.__LINE__;
+//			die(__FILE__ .' '. __LINE__ );
 			//vmdebug('Muh constructed plgVmShipmentWeight_countries',$varsToPush);
 		}
 		
 		/**
 		 * Create the table for this plugin if it does not yet exist.
 		 *
-		 * @author Valérie Isaksen
+		 * @since 3.9
 		 */
 		public function getVmPluginCreateTableSQL ()
 		{
-			
-			return $this->createTableSQL( 'Shipment Weight Countries Table' );
-			
-			
+			return $this->createTableSQL( 'Shipment Nova Pochta Table' );
 		}
 		
 		/**
+		 * список полей тбл. доставки
 		 * @return array
+		 * @since 3.9
 		 */
 		function getTableSQLFields ()
 		{
 			
-			$SQLfields = [ 'id' => 'int(1) UNSIGNED NOT NULL AUTO_INCREMENT' , 'virtuemart_order_id' => 'int(11) UNSIGNED' , 'order_number' => 'char(32)' ,
-			
-			               'ref_city' => 'char(32)' ,
-			
-			               'virtuemart_shipmentmethod_id' => 'mediumint(1) UNSIGNED' , 'shipment_name' => 'varchar(5000)' , 'order_weight' => 'decimal(10,4)' , 'shipment_weight_unit' => 'char(3) DEFAULT \'KG\'' , 'shipment_cost' => 'decimal(10,2)' , 'shipment_package_fee' => 'decimal(10,2)' , 'tax_id' => 'smallint(1)' ];
+			$SQLfields = [
+				'id' => 'int(1) UNSIGNED NOT NULL AUTO_INCREMENT' ,
+				'virtuemart_order_id' => 'int(11) UNSIGNED' ,
+				'order_number' => 'char(32)' ,
+				'ref_city' => 'char(32)' ,
+				'virtuemart_shipmentmethod_id' => 'mediumint(1) UNSIGNED' ,
+				'shipment_name' => 'varchar(5000)' ,
+				'order_weight' => 'decimal(10,4)' ,
+				'shipment_weight_unit' => 'char(3) DEFAULT \'KG\'' ,
+				'shipment_cost' => 'decimal(10,2)' ,
+				'shipment_package_fee' => 'decimal(10,2)' ,
+				'tax_id' => 'smallint(1)'
+			];
 			
 			return $SQLfields;
 		}
@@ -83,13 +100,13 @@
 		 * @param   string   $shipment_name                 Shipment Name
 		 *
 		 * @return mixed Null for shipments that aren't active, text (HTML) otherwise
-		 * @author Valérie Isaksen
-		 * @author Max Milbers
+		 * @since 3.9
 		 */
 		public function plgVmOnShowOrderFEShipment ( $virtuemart_order_id , $virtuemart_shipmentmethod_id , &$shipment_name )
 		{
 			
 			$this->onShowOrderFE( $virtuemart_order_id , $virtuemart_shipmentmethod_id , $shipment_name );
+			return ;
 		}
 		
 		/**
@@ -101,7 +118,7 @@
 		 * @param   array   $order     The actual order saved in the DB
 		 *
 		 * @return mixed Null when this method was not selected, otherwise true
-		 * @author Valerie Isaksen
+		 * @since 3.9
 		 */
 		function plgVmConfirmedOrder ( VirtueMartCart $cart , $order )
 		{

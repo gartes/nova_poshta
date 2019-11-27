@@ -14,6 +14,8 @@
     <files>
         <filename plugin="nova_pochta">nova_pochta.php</filename>
         <folder>assets</folder>
+        <folder>forms</folder>
+        <folder>helpers</folder>
         <folder>language</folder>
         <folder>tmpl</folder>
 <!--         <folder>nova_poshta-master</folder>-->
@@ -21,6 +23,13 @@
 
     <vmconfig>
         <fields name="params">
+
+
+
+
+
+
+
             <fieldset name="template">
                 <field name="shipment_logos" type="vmfiles" multiple="true" directory="/images/virtuemart/shipment"
                         label="VMSHIPMENT_WEIGHT_COUNTRIES_LOGOS"

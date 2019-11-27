@@ -1,1 +1,1 @@
-alert('sdasd')
+window.np
