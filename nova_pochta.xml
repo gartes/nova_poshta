@@ -26,6 +26,9 @@
             <fieldset name="np_setting">
                 <field name="apikey"
                        type="text"
+                       required="true"
+                       size="30"
+                       class="fld-c fld-b"
                        label="NOVA_POCHTA_APIKEY"
                 description="NOVA_POCHTA_APIKEY_DESC"/>
             </fieldset>

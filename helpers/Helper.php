@@ -10,6 +10,9 @@
 	namespace Plg\Np;
 	
 	
+	
+	
+	
 	class Helper
 	{
 		private $app;
@@ -22,6 +25,9 @@
 		 */
 		private function __construct ( $options = [] )
 		{
+			
+			
+			
 			$this->app = \JFactory::getApplication();
 			
 			return $this;
@@ -43,5 +49,17 @@
 			
 			return self::$instance;
 		}#END FN
+		
+		public static function plgVmSetOnTablePluginShipment( &$data , &$table ){
+			
+			
+			
+			
+			echo'<pre>';print_r( $counterparty );echo'</pre>'.__FILE__.' '.__LINE__;
+			die(__FILE__ .' '. __LINE__ );
+			
+			
+			
+		}
 		
 	}

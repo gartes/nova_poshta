@@ -228,6 +228,7 @@
 		 * @param                   $cart_prices
 		 *
 		 * @return int
+		 * @since 3.9
 		 */
 		function getCosts ( VirtueMartCart $cart , $method , $cart_prices )
 		{
@@ -250,7 +251,7 @@
 		 * @param   int             $method
 		 * @param   array           $cart_prices
 		 *
-		 * @return bool
+		 * @return bool Если false способ доставки не отображается
 		 * @since 3.9
 		 */
 		protected function checkConditions ( $cart , $method , $cart_prices )
@@ -362,6 +363,7 @@
 		 * @param $method
 		 *
 		 * @return bool
+		 * @since 3.9
 		 */
 		private function _nbproductsCond ( $cart , $method )
 		{
@@ -577,7 +579,7 @@
 		
 		
 		/**
-		 * Вывод в корзине
+		 * Вывод в корзине при оформлении заказа
 		 *
 		 * @param   VirtueMartCart  $cart
 		 *
@@ -635,6 +637,7 @@
 		{
 			$doc = JFactory::getDocument();
 			$doc->addScript('/plugins/vmshipment/nova_pochta/assets/js/admin-method_edit.js') ;
+			$doc->addStyleSheet('/plugins/vmshipment/nova_pochta/assets/css/admin-method_edit.css');
 			
 			echo'<pre>';print_r( $data );echo'</pre>'.__FILE__.' '.__LINE__;
 			
@@ -645,15 +648,19 @@
 		
 		
 		/**
-		 * @param $data
-		 * @param $table
+		 * События во время сохранения параметров способов доставки
+		 *
+		 * @param $data   array  Form Data
+		 * @param $table  object TableShipmentmethods
 		 *
 		 * @return bool
-		 * @author Max Milbers
+		 * @since 3.9
 		 */
 		function plgVmSetOnTablePluginShipment ( &$data , &$table )
 		{
-			die(__FILE__ .' '. __LINE__ );
+			$this->Helper::plgVmSetOnTablePluginShipment( $data , $table);
+			
+			
 			
 			$name = $data[ 'shipment_element' ];
 			$id   = $data[ 'shipment_jplugin_id' ];
@@ -662,46 +669,47 @@
 			{
 				return false;
 			}
-			else
+			
+			
+			
+			$tCon = [ 'weight_start' , 'weight_stop' , 'min_amount' , 'max_amount' , 'shipment_cost' , 'package_fee' ];
+			foreach( $tCon as $f )
 			{
-				$tCon = [ 'weight_start' , 'weight_stop' , 'min_amount' , 'max_amount' , 'shipment_cost' , 'package_fee' ];
-				foreach( $tCon as $f )
+				if( !empty( $data[ $f ] ) )
 				{
-					if( !empty( $data[ $f ] ) )
-					{
-						$data[ $f ] = str_replace( [ ',' , ' ' ] , [ '.' , '' ] , $data[ $f ] );
-					}
+					$data[ $f ] = str_replace( [ ',' , ' ' ] , [ '.' , '' ] , $data[ $f ] );
 				}
-				
-				$data[ 'nbproducts_start' ] = (int) $data[ 'nbproducts_start' ];
-				$data[ 'nbproducts_stop' ]  = (int) $data[ 'nbproducts_stop' ];
-				
-				//Reasonable tests:
-				if( !empty( $data[ 'zip_start' ] ) and !empty( $data[ 'zip_stop' ] ) and (int) $data[ 'zip_start' ] >= (int) $data[ 'zip_stop' ] )
-				{
-					vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_ZIP_CONDITION_WRONG' );
-				}
-				if( !empty( $data[ 'weight_start' ] ) and !empty( $data[ 'weight_stop' ] ) and (float) $data[ 'weight_start' ] >= (float) $data[ 'weight_stop' ] )
-				{
-					vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_WEIGHT_CONDITION_WRONG' );
-				}
-				
-				if( !empty( $data[ 'min_order' ] ) and !empty( $data[ 'max_order' ] ) and (float) $data[ 'min_order' ] >= (float) $data[ 'max_order' ] )
-				{
-					vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_AMOUNT_CONDITION_WRONG' );
-				}
-				
-				if( !empty( $data[ 'nbproducts_start' ] ) and !empty( $data[ 'nbproducts_stop' ] ) and (float) $data[ 'nbproducts_start' ] >= (float) $data[ 'nbproducts_stop' ] )
-				{
-					vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_NBPRODUCTS_CONDITION_WRONG' );
-				}
-				
-				//$data['orderamount_start'] = $data['min_amount'];
-				//$data['orderamount_stop'] = $data['max_amount'];
-				
-				//$data['show_on_pdetails'] = (int) $data['show_on_pdetails'];
-				return $this->setOnTablePluginParams( $name , $id , $table );
 			}
+			
+			$data[ 'nbproducts_start' ] = (int) $data[ 'nbproducts_start' ];
+			$data[ 'nbproducts_stop' ]  = (int) $data[ 'nbproducts_stop' ];
+			
+			//Reasonable tests:
+			if( !empty( $data[ 'zip_start' ] ) and !empty( $data[ 'zip_stop' ] ) and (int) $data[ 'zip_start' ] >= (int) $data[ 'zip_stop' ] )
+			{
+				vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_ZIP_CONDITION_WRONG' );
+			}
+			if( !empty( $data[ 'weight_start' ] ) and !empty( $data[ 'weight_stop' ] ) and (float) $data[ 'weight_start' ] >= (float) $data[ 'weight_stop' ] )
+			{
+				vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_WEIGHT_CONDITION_WRONG' );
+			}
+			
+			if( !empty( $data[ 'min_order' ] ) and !empty( $data[ 'max_order' ] ) and (float) $data[ 'min_order' ] >= (float) $data[ 'max_order' ] )
+			{
+				vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_AMOUNT_CONDITION_WRONG' );
+			}
+			
+			if( !empty( $data[ 'nbproducts_start' ] ) and !empty( $data[ 'nbproducts_stop' ] ) and (float) $data[ 'nbproducts_start' ] >= (float) $data[ 'nbproducts_stop' ] )
+			{
+				vmWarn( 'VMSHIPMENT_WEIGHT_COUNTRIES_NBPRODUCTS_CONDITION_WRONG' );
+			}
+			
+			//$data['orderamount_start'] = $data['min_amount'];
+			//$data['orderamount_stop'] = $data['max_amount'];
+			
+			//$data['show_on_pdetails'] = (int) $data['show_on_pdetails'];
+			return $this->setOnTablePluginParams( $name , $id , $table );
+			
 		}
 		
 		
