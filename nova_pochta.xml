@@ -13,7 +13,7 @@
 <!--    </languages>-->
     <files>
         <filename plugin="nova_pochta">nova_pochta.php</filename>
-        <folder>nova_pochta</folder>
+        <folder>nova_poshta-master</folder>
     </files>
 
     <vmconfig>
