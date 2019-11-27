@@ -23,7 +23,12 @@
 
     <vmconfig>
         <fields name="params">
-
+            <fieldset name="np_setting">
+                <field name="apikey"
+                       type="text"
+                       label="NOVA_POCHTA_APIKEY"
+                description="NOVA_POCHTA_APIKEY_DESC"/>
+            </fieldset>
 
 
 

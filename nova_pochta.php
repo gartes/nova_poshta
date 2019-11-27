@@ -23,6 +23,14 @@
 	class plgVmShipmentNova_pochta extends vmPSPlugin
 	{
 		
+		/**
+		 * Affects constructor behavior. If true, language files will be loaded automatically.
+		 *
+		 * @var    boolean
+		 * @since  3.1
+		 */
+		protected $autoloadLanguage = true;
+		
 		private $Helper ; 
 		
 		/**
