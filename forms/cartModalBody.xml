@@ -3,14 +3,14 @@
     <fields >
 <!--        <fields addfieldpath="/plugins/vmshipment/vmups/vmups/library/lib/form/fields" />-->
 <!--        <fields addfieldpath="/plugins/vmshipment/vmups/vmups/fields/novaposhta" />-->
-<!--        <fields addfieldpath="/plugins/vmshipment/vmups/vmups/fields/" />-->
+        <fields addfieldpath="/plugins/vmshipment/nova_pochta/fields" />
 
 
         <fieldset name="courierAdress">
 
             <!-- Выбор города  open="openCityGlavpunkt" -->
             <field name="cityText"
-                   type="textAutocomplete"
+                   type="citylist"
                    class="ac_Settlements cityText"
                    minLength="1"
                    html="true"
@@ -21,6 +21,8 @@
 
                    onchange=""
                    label="NOVA_POCHTA_CITY" />
+            <!-- REF города получения getCities -->
+            <field name="cityRef" type="hidden"  />
 
 
             <fields  name="novaposhta">
@@ -29,24 +31,34 @@
                        class="btn-group btn-group-yesno"
                        default="1"
                        showon=""
-                       onchange="VMUPS.SaveShipmentmethod();"
-
                        label="NOVA_POCHTA_SERVICE_TYPES">
                     <option value="0">NOVA_POCHTA_SERVICE_TYPES_DOORS</option>
                     <option value="1">NOVA_POCHTA_SERVICE_TYPES_WAREHOUSE</option>
                 </field>
 
+
+                <!-- Индикатор для отобажения списка сладов  -->
+                <field name="warehouses_ind" type="hidden" default="0" />
                 <!-- Список складов -->
                 <field name="warehouses"
-                       type="novaposhta_warehouses"
+                       type="warehouseslist"
                        class="warehouses"
-                       showon="serviceType:1[AND]service_types_variant:1[AND]showControls:1"
+                       showon="serviceType:1"
                        onchange="VMUPS.Novaposhta.WarehouseSelect(this);"
-                       label="NOVA_POCHTA_WAREHOUSES" />
+                       label="NOVA_POCHTA_WAREHOUSES" /><!-- [AND]warehouses_ind:1 -->
 
 
 
-                <field type="spacer" name="spacer_addr_rpc" showon="" label="NOVA_POCHTA_ADDR_RPC_SHORT" />
+
+
+
+
+
+
+
+
+                <field name="service_types_variant" type="hidden" default="0" />
+                <field type="spacer" name="spacer_addr_rpc" showon="serviceType:0" label="NOVA_POCHTA_ADDR_RPC_SHORT" />
                 <!-- Улица: -->
                 <field name="recipientAddressName" type="textAutocomplete"
                        html="true"
@@ -57,21 +69,21 @@
                        change="changeRecipientAddressName"
 
                        class="adress-field recipientAddressName"
-                       showon="serviceType:0[AND]showControls:1"
+                       showon="serviceType:0"
                        label="NOVA_POCHTA_STREET_NAME"
                          />
                 <!--Дом/Корпус: -->
                 <field name="recipientHouse" type="textj3"
                        size="5"
                        class="adress-field recipientHouse"
-                       showon="serviceType:0[AND]showControls:1"
+                       showon="serviceType:0"
                        label="NOVA_POCHTA_NUMBER_HOME"  />
 
                 <!-- Квартира -->
                 <field name="recipientFlat" type="textj3"
                        size="5"
                        class="adress-field recipientFlat"
-                       showon="serviceType:0[AND]showControls:1"
+                       showon="serviceType:0"
                        label="NOVA_POCHTA_APARTMENT_NUMBER"  />
 
                 <!-- Дата желаемая доставки   -->
@@ -97,16 +109,15 @@
 
 
 
-                <!-- REF города получения getCities -->
-                <field name="cityRef" type="hiddenj3"  />
-                <!-- REF Справочника Settlements   -->
-                <field name="SettlementRef" type="hiddenj3"  />
 
-                <field name="countWarehouses" type="hiddenj3" />
-                <field name="service_types_variant" type="hiddenj3" default="0" />
-                <field name="streetRef" type="hiddenj3" />
-                <field name="streetsType" type="hiddenj3" />
-                <field name="streetsTypeRef" type="hiddenj3" />
+                <!-- REF Справочника Settlements   Идентификатор (REF) типа населенного пункта (город , поселок , село )-->
+                <field name="SettlementRef" type="hidden"  />
+
+                <field name="countWarehouses" type="hidden" />
+
+                <field name="streetRef" type="hidden" />
+                <field name="streetsType" type="hidden" />
+                <field name="streetsTypeRef" type="hidden" />
 
 
 

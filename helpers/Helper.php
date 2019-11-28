@@ -54,6 +54,17 @@
 		}#END FN
 		
 		
+		public function loadWarehouses(){
+			$ret =  \Plg\Np\Html::loadWarehouses();
+			return $ret ;
+		}
+		
+		/**
+		 * Получение содержимого окна выбора метода доставки на фронте в корзине
+		 * @return string - Html форма
+		 *
+		 * @since version
+		 */
 		public function getModalBody(){
 			$ret =  \Plg\Np\Html::getModalBody();
 			return $ret ;
@@ -90,9 +101,12 @@
 			Js::instance();
 			$doc = JFactory::getDocument();
 			$doc->addScript( '/plugins/vmshipment/nova_pochta/assets/js/front-cart_shipment.js' );
+
 			$doc->addScriptOptions( 'NovaPoshta-cart' , [ 'virtuemart_shipmentmethod_id' => $plugin->virtuemart_shipmentmethod_id , ] );
 			$doc->addScriptOptions( 'siteUrl' , JUri::root() );
 			
+			$doc->addStyleSheet('/libraries/GNZ11/assets/css/form/radio-btn-group.css');
+			$doc->addStyleSheet('/plugins/vmshipment/nova_pochta/assets/css/front-cart_shipment.css');
 			return $html ;
 		}
 		

@@ -80,6 +80,34 @@
 			return self::$ApiNpCounterparty ;
 			
 		}
+		/**
+		 * @param $ApiKey
+		 *
+		 *
+		 * @return Api\NpAddress
+		 * @throws Exception
+		 * @since version
+		 */
+		public static function  getAddress ( $ApiKey )
+		{
+			if( !self::$apiKey ){
+				if( !$ApiKey )
+				{
+					throw new Exception( 'Failed to start application Dont ApiKey' , 500 );
+				}
+				self::initApiNpConfig( $ApiKey );
+			}
+			
+			if( !self::$ApiNpCounterparty ){
+				self::$ApiNpCounterparty = new \Plg\Np\Api\NpAddress() ;
+			}
+			return self::$ApiNpCounterparty ;
+			
+		}
+	
+	
+		
+		
 		
 		/**
 		 * Получим контактных персон для контрагентов

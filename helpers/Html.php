@@ -12,6 +12,19 @@
 	
 	class Html
 	{
+		
+		public static function loadWarehouses(){
+			$data = [];
+			# Загрузить форму
+			$form = \JForm::getInstance( 'ModalBody', JPATH_PLUGINS.'/vmshipment/nova_pochta/forms/cartModalBody.xml');
+			$form->bind($data);
+			$viewData['formField'] =  $form->renderFieldset('courierAdress');
+			# Подключение слоя
+			$layout    = new \JLayoutFile( 'cartModalBody' ,JPATH_PLUGINS.'/vmshipment/nova_pochta/tmpl' );
+			return $layout->render($viewData);
+		}
+		
+		
 		/**
 		 *
 		 *
@@ -20,7 +33,6 @@
 		public static function getModalBody(){
 			
 			$data = [];
-			
 			# Загрузить форму
 			$form = \JForm::getInstance( 'ModalBody', JPATH_PLUGINS.'/vmshipment/nova_pochta/forms/cartModalBody.xml');
 			$form->bind($data);
@@ -29,14 +41,5 @@
 			# Подключение слоя
 			$layout    = new \JLayoutFile( 'cartModalBody' ,JPATH_PLUGINS.'/vmshipment/nova_pochta/tmpl' );
 			return $layout->render($viewData);
-			
-			
-			
-			
-			
-			
-			echo'<pre>';print_r( $viewData );echo'</pre>'.__FILE__.' '.__LINE__;
-			die(__FILE__ .' '. __LINE__ );
-			return 'xxxxxx' ;
 		}
 	}
