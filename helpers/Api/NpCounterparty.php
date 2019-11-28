@@ -19,19 +19,43 @@
 	use NovaPoshta\MethodParameters\MethodParameters;
 	
 	
-	class ApiNpCounterparty
+	class NpCounterparty
 	{
-		public static function getCounterparties()
+	 
+		
+		/**
+		 * NpCounterparty constructor.
+		 */
+		public function __construct ()
 		{
+			return $this ;
+		}
+		
+		static $aptamsDef = [
+			'Property'=> 'Recipient' ,
+			'Page'=> 1 ,
+			
+		];
+		
+		public static function getCounterparties( $params = [] )
+		{
+			
+			$setParams = array_merge( self::$aptamsDef , $params ) ;
+			
 			$data = new Counterparty_getCounterparties();
-			$data->setCounterpartyProperty('Recipient');
-			$data->setPage(1);
-			$data->setCityRef('8d5a980d-391c-11dd-90d9-001a92567626');
-			$data->setFindByString('Петр');
+			$data->setCounterpartyProperty( $setParams['Property'] );
+			return Counterparty::getCounterparties($data);
+			
+			
+			
+			
+//			$data->setPage(1);
+//			$data->setCityRef($setParams['CityRef'] );
+//			$data->setFindByString('Петр');
 			// или
 			//        $data->setRef('adcad698-011c-11e5-ad08-005056801333');
 			
-			return Counterparty::getCounterparties($data);
+			
 		}
 		
 		

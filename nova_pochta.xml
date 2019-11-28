@@ -8,29 +8,56 @@
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <version>0.0.1</version>
     <description>NOVA_POCHTA_PLUGIN_DESC</description>
-<!--    <languages>-->
-<!--        <language tag="en-GB">ru-RU.plg_nova_pochta.ini</language>-->
-<!--    </languages>-->
+
     <files>
         <filename plugin="nova_pochta">nova_pochta.php</filename>
         <folder>assets</folder>
+        <folder>fields</folder>
         <folder>forms</folder>
         <folder>helpers</folder>
         <folder>language</folder>
         <folder>tmpl</folder>
-<!--         <folder>nova_poshta-master</folder>-->
+
     </files>
 
+
+    <config> </config>
+
     <vmconfig>
+
+
         <fields name="params">
-            <fieldset name="np_setting">
+
+            <fieldset name="np">
                 <field name="apikey"
                        type="text"
                        required="true"
                        size="30"
                        class="fld-c fld-b"
                        label="NOVA_POCHTA_APIKEY"
-                description="NOVA_POCHTA_APIKEY_DESC"/>
+                       description="NOVA_POCHTA_APIKEY_DESC"/>
+            </fieldset>
+
+
+            <fieldset name="np_settingsd">
+                <field type="textarea" name="np_params_sender" label="Enter some text" />
+
+
+
+            </fieldset>
+
+
+            <fieldset name="np_setting">
+
+
+
+
+
+
+
+
+
+
             </fieldset>
 
 

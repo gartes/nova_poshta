@@ -51,6 +51,9 @@
 			$this->_tableId    = 'id';
 			$this->tableFields = array_keys( $this->getTableSQLFields() );
 			$varsToPush        = $this->getVarsToPush();
+			
+			
+			
 			$this->addVarsToPushCore( $varsToPush , 0 );
 			
 			$this->setConfigParameterable( $this->_configTableFieldName , $varsToPush );
@@ -63,6 +66,11 @@
 //			die(__FILE__ .' '. __LINE__ );
 			//vmdebug('Muh constructed plgVmShipmentWeight_countries',$varsToPush);
 		}
+		
+		
+		
+		
+		
 		
 		/**
 		 * Create the table for this plugin if it does not yet exist.
@@ -543,8 +551,81 @@
 		public function plgVmDisplayListFEShipment ( VirtueMartCart $cart , $selected = 0 , &$htmlIn )
 		{
 			
+			$htmlIn[] = '<h1>xxxxxxxxx</h1>' ;
+			
+			
+			
 			return $this->displayListFE( $cart , $selected , $htmlIn );
 		}
+		
+		/**
+		 * @param $plugin
+		 *
+		 * @return mixed
+		 *
+		 * @throws Exception
+		 * @since version
+		 */
+		protected function renderPluginName ($plugin) {
+			
+			$c = array();
+			$idN = 'virtuemart_'.$this->_psType.'method_id';
+			if(isset($c[$this->_psType][$plugin->$idN])){
+				return $c[$this->_psType][$plugin->$idN];
+			}
+			
+			
+			$addHtml = $this->Helper::renderPluginName( $plugin );
+			
+			
+			//			echo'<pre>';print_r( $plugin->virtuemart_shipmentmethod_id );echo'</pre>'.__FILE__.' '.__LINE__;
+//			die(__FILE__ .' '. __LINE__ );
+			
+			$plugin_name = $this->_psType . '_name';
+			
+			$return = '';
+			
+			$description = 'XXXXXX';
+			$c[$this->_psType][$plugin->$idN] = $return . '<span class="' . $this->_type . '_name">' . $plugin->$plugin_name . '</span>' . $addHtml;
+			return $c[$this->_psType][$plugin->$idN];
+			
+			
+		}
+		
+		
+		public function onAjaxNova_pochta(){
+			if(!JSession::checkToken('get')) exit;
+			$app = JFactory::getApplication() ;
+			
+			$opt = $app->input->get('opt' , [] , 'ARRAY') ;
+			
+			if( !isset($opt['task']) ) return ; #END IF
+			if( !method_exists($this->Helper ,$opt['task']) ) {
+				echo new JResponseJson(null , JText::_('NOVA_POCHTA_MY_TASK_ERROR'), true);
+				$app->close();
+			} #END IF
+			try
+			{
+				$res = $this->Helper->{$opt[ 'task' ]}();
+				echo new JResponseJson( $res );
+				$app->close();
+			}
+			catch( Exception $e )
+			{
+				// Executed only in PHP 5, will not be reached in PHP 7
+				echo new JResponseJson(null , $e->getMessage() , true);
+				$app->close();
+				
+				
+			}
+			catch( Throwable $e )
+			{
+				// Executed only in PHP 7, will not match in PHP 5
+				echo new JResponseJson(null , $e->getMessage() , true);
+				$app->close();
+			}
+		}
+		
 		
 		/**
 		 * @param   VirtueMartCart  $cart
@@ -639,7 +720,8 @@
 			$doc->addScript('/plugins/vmshipment/nova_pochta/assets/js/admin-method_edit.js') ;
 			$doc->addStyleSheet('/plugins/vmshipment/nova_pochta/assets/css/admin-method_edit.css');
 			
-			echo'<pre>';print_r( $data );echo'</pre>'.__FILE__.' '.__LINE__;
+//			echo'<pre>';print_r( $this );echo'</pre>'.__FILE__.' '.__LINE__;
+//			echo'<pre>';print_r( $data );echo'</pre>'.__FILE__.' '.__LINE__;
 			
 //			die(__FILE__ .' '. __LINE__ );
 			
@@ -654,13 +736,11 @@
 		 * @param $table  object TableShipmentmethods
 		 *
 		 * @return bool
+		 * @throws Exception
 		 * @since 3.9
 		 */
 		function plgVmSetOnTablePluginShipment ( &$data , &$table )
 		{
-			$this->Helper::plgVmSetOnTablePluginShipment( $data , $table);
-			
-			
 			
 			$name = $data[ 'shipment_element' ];
 			$id   = $data[ 'shipment_jplugin_id' ];
@@ -669,6 +749,23 @@
 			{
 				return false;
 			}
+			
+			
+			# Если ключ передается
+			if( !empty( $data['apikey'] ) )
+			{
+				# Получить контрагента отправителя
+				$this->Helper::plgVmSetOnTablePluginShipment( $data , $table);
+			}else{
+				$data['np_params_sender'] = null ;
+			}#END IF
+			
+			
+			
+			
+			
+			
+			
 			
 			
 			
@@ -681,9 +778,21 @@
 				}
 			}
 			
+			
+			
 			$data[ 'nbproducts_start' ] = (int) $data[ 'nbproducts_start' ];
 			$data[ 'nbproducts_stop' ]  = (int) $data[ 'nbproducts_stop' ];
 			
+			$data['params'][ 'nbproducts_start' ] = $data['params']['np_params'] ;
+			
+			
+			
+//			echo'<pre>';print_r(  $data );echo'</pre>'.__FILE__.' '.__LINE__;
+//			die(__FILE__ .' '. __LINE__ );
+		
+		
+		
+		
 			//Reasonable tests:
 			if( !empty( $data[ 'zip_start' ] ) and !empty( $data[ 'zip_stop' ] ) and (int) $data[ 'zip_start' ] >= (int) $data[ 'zip_stop' ] )
 			{
@@ -711,6 +820,8 @@
 			return $this->setOnTablePluginParams( $name , $id , $table );
 			
 		}
+		
+		
 		
 		
 	}
