@@ -42,14 +42,29 @@
             <fieldset name="np_settingsd">
                 <field type="textarea" name="np_params_sender" label="Enter some text" />
 
-
-
             </fieldset>
 
 
             <fieldset name="np_setting">
+                <field name="city_celect_style"
+                       type="radio"
+                       default="0"
+                       label="NOVA_POCHTA_CITY_CELECT_STYLE"
 
+                       description="NOVA_POCHTA_CITY_CELECT_STYLE_TIP">
+                    <option value="0">NOVA_POCHTA_CITY_CELECT_STYLE_T</option>
+                    <option value="1">NOVA_POCHTA_CITY_CELECT_STYLE_L</option>
+                </field>
 
+                <field name="form_style"
+                       type="radio"
+                       default="0"
+                       label="NOVA_POCHTA_CITY_FORM_STYLE"
+
+                       description="NOVA_POCHTA_CITY_FORM_STYLE_TIP">
+                    <option value="0">NOVA_POCHTA_CITY_FORM_STYLE_BODY</option>
+                    <option value="1">NOVA_POCHTA_CITY_CELECT_STYLE_MODAL</option>
+                </field>
 
 
 

@@ -59,9 +59,14 @@
 			$this->setConfigParameterable( $this->_configTableFieldName , $varsToPush );
 			$this->setConvertable( [ 'min_amount' , 'max_amount' , 'shipment_cost' , 'package_fee' ] );
 			
+			$Method = $this->getPluginMethod(2) ;
 			JLoader::registerNamespace('Plg\Np',JPATH_PLUGINS.'/vmshipment/nova_pochta/helpers',$reset=false,$prepend=false,$type='psr4');
-			$this->Helper = \Plg\Np\Helper::instance();
+			$this->Helper = \Plg\Np\Helper::instance( $Method );
 			
+			
+			
+//			echo'<pre>';print_r( $Method );echo'</pre>'.__FILE__.' '.__LINE__;
+//			die(__FILE__ .' '. __LINE__ );
 //			echo'<pre>';print_r( $this->Helper );echo'</pre>'.__FILE__.' '.__LINE__;
 //			die(__FILE__ .' '. __LINE__ );
 			//vmdebug('Muh constructed plgVmShipmentWeight_countries',$varsToPush);
@@ -95,6 +100,7 @@
 				'virtuemart_order_id' => 'int(11) UNSIGNED' ,
 				'order_number' => 'char(32)' ,
 				'ref_city' => 'char(32)' ,
+				'novaposhta' => 'text ' ,
 				'virtuemart_shipmentmethod_id' => 'mediumint(1) UNSIGNED' ,
 				'shipment_name' => 'varchar(5000)' ,
 				'order_weight' => 'decimal(10,4)' ,
@@ -139,20 +145,45 @@
 		function plgVmConfirmedOrder ( VirtueMartCart $cart , $order )
 		{
 			
+			
+			
+			
 			if( !( $method = $this->getVmPluginMethod( $order[ 'details' ][ 'BT' ]->virtuemart_shipmentmethod_id ) ) )
 			{
 				return null; // Another method was selected, do nothing
 			}
+			
+			
 			if( !$this->selectedThisElement( $method->shipment_element ) )
 			{
 				return false;
 			}
+			
+			
+			$app = \JFactory::getApplication() ;
+			
+			
+//			echo'<pre>';print_r( $order );echo'</pre>'.__FILE__.' '.__LINE__;
+//			echo'<pre>';print_r( $app->input );echo'</pre>'.__FILE__.' '.__LINE__;
+//
+//			die( __FILE__ . ' ' . __LINE__ );
+			
+			
 			$values[ 'virtuemart_order_id' ]          = $order[ 'details' ][ 'BT' ]->virtuemart_order_id;
 			$values[ 'order_number' ]                 = $order[ 'details' ][ 'BT' ]->order_number;
 			$values[ 'virtuemart_shipmentmethod_id' ] = $order[ 'details' ][ 'BT' ]->virtuemart_shipmentmethod_id;
 			$values[ 'shipment_name' ]                = $this->renderPluginName( $method );
 			$values[ 'order_weight' ]                 = $this->getOrderWeight( $cart , $method->weight_unit );
 			$values[ 'shipment_weight_unit' ]         = $method->weight_unit;
+			
+			$novaposhta = $app->input->get('novaposhta' , [] , 'ARRAY' ) ;
+			$values[ 'ref_city' ]         = $app->input->get('cityRef' , false ) ;
+			$values[ 'novaposhta' ]       = json_encode($novaposhta) ;
+			
+			
+			
+			
+			
 			
 			$costs = $this->getCosts( $cart , $method , $cart->cartPrices );
 			if( !empty( $costs ) )
@@ -559,6 +590,8 @@
 		}
 		
 		/**
+		 * Вывод названия
+		 *
 		 * @param $plugin
 		 *
 		 * @return mixed
@@ -568,6 +601,8 @@
 		 */
 		protected function renderPluginName ($plugin) {
 			
+			
+			
 			$c = array();
 			$idN = 'virtuemart_'.$this->_psType.'method_id';
 			if(isset($c[$this->_psType][$plugin->$idN])){
@@ -576,6 +611,8 @@
 			
 			
 			$addHtml = $this->Helper::renderPluginName( $plugin );
+			
+			
 			
 			
 			//			echo'<pre>';print_r( $plugin->virtuemart_shipmentmethod_id );echo'</pre>'.__FILE__.' '.__LINE__;
@@ -588,6 +625,9 @@
 			$description = 'XXXXXX';
 			$c[$this->_psType][$plugin->$idN] = $return . '<span class="' . $this->_type . '_name">' . $plugin->$plugin_name . '</span>' . $addHtml;
 			return $c[$this->_psType][$plugin->$idN];
+			
+			
+			
 			
 			
 		}
@@ -670,7 +710,7 @@
 		 */
 		function plgVmOnCheckoutCheckDataShipment ( VirtueMartCart $cart )
 		{
-			die( __FILE__ . ' ' . __LINE__ );
+			
 			if( empty( $cart->virtuemart_shipmentmethod_id ) ) return false;
 			
 			$virtuemart_vendor_id = 1; //At the moment one, could make sense to use the cart vendor id

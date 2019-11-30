@@ -25,16 +25,61 @@ class JFormFieldCitylist extends JFormFieldList
 	 */
 	protected $type = 'Citylist';
 
+	protected static $settingPLG ;
+	
+	/**
+	 * Настройки
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	protected static function getSetting(){
+		$app                          = \JFactory::getApplication();
+		if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
+		VmConfig::loadConfig();
+		
+		$virtuemart_shipmentmethod_id = $app->input->get( 'virtuemart_shipmentmethod_id' , null , 'INT' );
+		if(  !$virtuemart_shipmentmethod_id )
+		{
+			throw new Exception('Err: Dont virtuemart shipmentmethod id In JFormFieldCitylist.' , 500 ) ;
+		}#END IF
+		
+		$shipmentModel = VmModel::getModel( 'Shipmentmethod' );
+		$shipmentModel->setId( $virtuemart_shipmentmethod_id );
+		self::$settingPLG = $shipmentModel->getShipment();
+		
+		
+	}
+	
 	/**
 	 * Method to get the field input markup for a generic list.
 	 * Use the multiple attribute to enable multiselect.
 	 *
 	 * @return  string  The field input markup.
 	 *
+	 * @throws Exception
 	 * @since   3.7.0
 	 */
 	protected function getInput()
 	{
+		
+		self::getSetting();
+		
+		$setting = self::$settingPLG ;
+		if( !$setting->city_celect_style )
+		{
+			return '<input type="text"
+						name="cityText"
+						id="cityText"
+						value=""
+						class="ac_Settlements cityText"
+						autocomplete="off">
+						
+					<i class="auto_control clean icon-cancel" onclick="jQuery(this).prev(\'input\').val(\'\')"></i>
+						
+						' ;
+		}#END IF
+		
 		
 		
 		
@@ -135,6 +180,8 @@ class JFormFieldCitylist extends JFormFieldList
 		$shipmentModel->setId( $virtuemart_shipmentmethod_id );
 		$shipmentMethod = $shipmentModel->getShipment();
 		
+		
+		
 		$tagLanguage = JFactory::getLanguage()->getTag();
 		$lp = null ;
 		$options = [''=>'Виберіть місто...'] ;
@@ -145,12 +192,15 @@ class JFormFieldCitylist extends JFormFieldList
 		}#END IF
 		
 		
-		if( $format == 'raw' && $opt[ 'task' ] == 'loadWarehouses' )
+		if( $format == 'raw' && $opt[ 'task' ] == 'loadWarehouses'  )
 		{
 			return null;
 		}#END IF
 		
-		
+		if( !$shipmentMethod->city_celect_style )
+		{
+			return null;
+		}#END IF
 		
 		
 		$Address = \Plg\Np\Api::getAddress( $shipmentMethod->apikey );

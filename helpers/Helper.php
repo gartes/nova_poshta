@@ -23,6 +23,7 @@
 	{
 		private $app;
 		public static $instance;
+		public static $options ;
 		
 		/**
 		 * helper constructor.
@@ -32,7 +33,8 @@
 		private function __construct ( $options = [] )
 		{
 			$this->app = JFactory::getApplication();
-			
+			self::$options = $options ;
+			self::setSetting();
 			return $this;
 		}#END FN
 		
@@ -53,7 +55,31 @@
 			return self::$instance;
 		}#END FN
 		
+		public static function getSetting($virtuemart_shipmentmethod_id){
 		
+		}
+		
+		
+		public static function setSetting(){
+			$opt = self::$options ;
+			
+			
+			$doc = JFactory::getDocument();
+			$doc->addScriptOptions('NpSettingPlg' , [
+				'city_celect_style'=> $opt->city_celect_style ,
+				'form_style'=> $opt->form_style ,
+				'virtuemart_shipmentmethod_id'=> $opt->virtuemart_shipmentmethod_id ,
+			]);
+			
+			
+		}
+		
+		/**
+		 * Подгрузка складов в городе
+		 * @return string
+		 *
+		 * @since version
+		 */
 		public function loadWarehouses(){
 			$ret =  \Plg\Np\Html::loadWarehouses();
 			return $ret ;

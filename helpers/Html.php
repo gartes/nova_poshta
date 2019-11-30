@@ -15,9 +15,15 @@
 		
 		public static function loadWarehouses(){
 			$data = [];
+			$app = \JFactory::getApplication() ;
+			$virtuemart_shipmentmethod_id = $app->input->get('virtuemart_shipmentmethod_id') ;
+			
 			# Загрузить форму
 			$form = \JForm::getInstance( 'ModalBody', JPATH_PLUGINS.'/vmshipment/nova_pochta/forms/cartModalBody.xml');
 			$form->bind($data);
+			
+			
+			
 			$viewData['formField'] =  $form->renderFieldset('courierAdress');
 			# Подключение слоя
 			$layout    = new \JLayoutFile( 'cartModalBody' ,JPATH_PLUGINS.'/vmshipment/nova_pochta/tmpl' );
@@ -32,7 +38,17 @@
 		 */
 		public static function getModalBody(){
 			
-			$data = [];
+			$app = \JFactory::getApplication() ;
+			
+			
+			
+			$data = [
+				''
+			];
+			
+			
+			
+			
 			# Загрузить форму
 			$form = \JForm::getInstance( 'ModalBody', JPATH_PLUGINS.'/vmshipment/nova_pochta/forms/cartModalBody.xml');
 			$form->bind($data);
@@ -42,4 +58,19 @@
 			$layout    = new \JLayoutFile( 'cartModalBody' ,JPATH_PLUGINS.'/vmshipment/nova_pochta/tmpl' );
 			return $layout->render($viewData);
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}

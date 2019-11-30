@@ -44,8 +44,8 @@
                        type="warehouseslist"
                        class="warehouses"
                        showon="serviceType:1"
-                       onchange="VMUPS.Novaposhta.WarehouseSelect(this);"
-                       label="NOVA_POCHTA_WAREHOUSES" /><!-- [AND]warehouses_ind:1 -->
+                       onchange=""
+                       label="NOVA_POCHTA_WAREHOUSES" /><!-- [AND]warehouses_ind:1 VMUPS.Novaposhta.WarehouseSelect(this);-->
 
 
 

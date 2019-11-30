@@ -1,3 +1,192 @@
+div#cartModalBody {
+    float: left;
+    width: 100%;
+}
+form#form-cartModalBody {
+    float: left;
+    width: 100%;
+}
+.np_Ext #cartModalBody form> .f-cont {
+    width: 100%;
+    height: auto;
+    overflow: inherit;
+}
+.np_Ext input#cityText {
+    width: auto;
+}
+
+.np_Ext .control-label {
+    float: left;
+    width: 100%;
+}
+
+.np_Ext .controls {
+    float: left;
+    width: 100%;
+}
+
+.np_Ext #cityRef + div fieldset label {
+    width: 100px;
+}
+.np_Ext #novaposhta_recipientAddressName {
+    width: auto;
+}
+.np_Ext .control-group {
+    float: left;
+}
+
+.np_Ext .chosen-container-single .chosen-search input[type=text] {
+    width: calc(100% - 30px);
+}
+#novaposhta_service_types_variant + .control-group.field-spacer {
+    width: 100%;
+}
+.VMUPS_PLG .icon-unpublish:before, .icon-cancel:before {
+    content: "+";
+    position: absolute;
+    /* border: 1px solid #ccc; */
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 13px;
+    letter-spacing: 1px;
+    -moz-transform: rotate(15deg); /* Для Firefox */
+    -ms-transform: rotate(15deg); /* Для IE */
+    -webkit-transform: rotate(15deg); /* Для Safari, Chrome, iOS */
+    -o-transform: rotate(15deg); /* Для Opera */
+    transform: rotate(45deg);
+    color: #a79292;
+    font-size: 26px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-left: -20px;
+    cursor: pointer;
+    transition: all .5s;
+}
+input#novaposhta_recipientAddressName:active +i:before {
+    color: red;
+}
+.icon-cancel:hover:before {
+    color: red;
+}
+
+div#streetConteynerAutocomp {
+    font-size: 12px;
+    /* border: 1px solid #ccc; */
+    position: relative;
+    background: #fff;
+    float: left;
+    width: 100%;
+}
+
+div#streetConteynerAutocomp li {
+    border-bottom: 1px solid #ccc;
+    float: left;
+    width: 100%;
+}
+
+div#streetConteynerAutocomp li div {
+    width: 100%;
+    float: left;
+    margin-left: 4px;
+}
+
+#streetConteynerAutocomp ul {
+    position: absolute !important;
+    background: #fff;
+}
+
+.VMUPS_PLG .ui-autocomplete.ui-menu {
+    /* width: 110% !important; */
+    margin-top: -20px !important;
+    font-size: 11.4px;
+    max-height: 200px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-top: none;
+    border-color: #ccc;
+    padding: 5px 0px 0px 5px;
+    /* display: block !important; */
+    margin-left: 0;
+    margin-bottom: 10px;
+    position: absolute !important;
+    background: #fff;
+    box-shadow: 3px 6px 8px 6px rgba(51, 51, 51, 0.6);
+    border-radius: 3px;
+    z-index: 5 !important;
+}
+.VMUPS_PLG .ui-autocomplete.ui-menu li{list-style: none;height: 20px;}
+.ConteynerUiAutocomplete li {
+    list-style-type: none;
+    width: 98%;
+    transition: all .3s;
+    border-bottom: 1px solid #ccc;
+    padding-left: 5px;
+    /* padding-right: 65px !important; */
+    /* margin-right: 0px !important; */
+}
+
+.ui-autocomplete li a {
+    list-style: none;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 11px;
+    color: #000;
+    font-style: italic;
+    display: block;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.41);
+}
+
+#tlementsConteyner li a .countWarehouses {
+    float: right;
+    margin-right: 4px;
+}
+
+.ui-autocomplete li:hover {
+    background-color: rgba(248, 6, 6, 0.21);
+}
+
+.ui-autocomplete li:hover a {
+    color: rgb(125, 125, 125);
+}
+span.ui-helper-hidden-accessible {
+    display: none;
+}
+.VMUPS_PLG .cityText {
+    width: 370px;
+    transition: color .1s !important;
+}
+input#cityText {
+    width: 100%;
+}
+
+div#tlementsConteyner {
+    width: 100%;
+    position: relative;
+}
+
+div#tlementsConteyner ul {
+    position: absolute !important;
+    font-size: 9px;
+    background: #fff;
+    z-index: 1000;
+}
+
+div#tlementsConteyner ul div {
+    margin-left: 5px;
+    float: left;
+    width: 100%;
+}
+
+div#tlementsConteyner ul li {
+    border-bottom: 1px solid #ccc;
+    float: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+
 input#novaposhta_warehouses_ind[value="0"]+div {
     /*display: none;*/
 
