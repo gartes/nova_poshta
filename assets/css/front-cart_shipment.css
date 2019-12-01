@@ -42,9 +42,9 @@ form#form-cartModalBody {
     width: 100%;
 }
 .VMUPS_PLG .icon-unpublish:before, .icon-cancel:before {
-    content: "+";
+    content: "+" !important;
+    font-family: sans-serif !important;
     position: absolute;
-    /* border: 1px solid #ccc; */
     width: 16px;
     height: 16px;
     text-align: center;

@@ -94,8 +94,23 @@ class JFormFieldWarehouseslist extends JFormFieldList
 			$listoptions['list.translate'] = false;
 			$listoptions['option.attr'] = 'optionattr';
 			$listoptions['list.attr'] = trim($attr);
-
-			$html[] = JHtml::_('select.genericlist', $options, $this->name, $listoptions);
+			
+			$WarehousesRef = \Plg\Np\Helper::$WarehousesRef ;
+			
+			if( $this->id == 'novaposhta_SenderAddress' )
+			{
+				$WarehousesRef = \Plg\Np\Helper::$SenderAddress ;
+			}#END IF
+			
+			
+			$html[] = JHtml::_('select.genericlist',
+				$options,
+				$this->name,
+				$listoptions ,
+				'value',
+				'text' ,
+				$WarehousesRef
+			);
 		}
 
 		return implode($html);
@@ -139,13 +154,25 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		
 		if( $app->isClient('administrator') )
 		{
-			$opt['cityRef'] = $app->input->get('ref_city_delivery' , null ) ;
 			
-		
+			$opt['cityRef'] = $app->input->get('ref_city_delivery' , null ) ;
+			$opt = $app->input->get('opt' , [] , 'ARRAY' ) ;
+			
+			if( !$opt['cityRef'] )
+			{
+				$opt['cityRef'] =  \Plg\Np\Helper::$CityRef ;
+			}#END IF
+			if( $this->id == 'novaposhta_SenderAddress' )
+			{
+				$opt['cityRef'] =  \Plg\Np\Helper::$CitySender ;
+				
+			}#END IF
+			
+			
+			
 		}#END IF
 		
 		
- 	
 		
 		if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
 		VmConfig::loadConfig();
@@ -154,14 +181,13 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		$shipmentMethod = $shipmentModel->getShipment();
 		
 		
-//		echo'<pre>';print_r( $opt );echo'</pre>'.__FILE__.' '.__LINE__;
-//		die(__FILE__ .' '. __LINE__ );
-		
-		
 		$Address = \Plg\Np\Api::getAddress( $shipmentMethod->apikey );
 		$WarehousesList = $Address::getWarehouses($opt['cityRef']);
 		
-		if( !count($WarehousesList->data) &&  $format    == 'raw' )
+		
+		
+		
+		if( !count($WarehousesList->data) &&  $format    == 'json' )
 		{
 			echo new JResponseJson(null , JText::_('NOVA_POCHTA_WAREHOUSES_LIST_Z_COUNT'));
 			$app->close();
@@ -177,7 +203,7 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		
 		
 		
-		if(  $format  == 'raw' )
+		if(  $format  == 'json' )
 		{
 			$ret = [
 				'WarehousesList'=>$options ,
@@ -187,6 +213,7 @@ class JFormFieldWarehouseslist extends JFormFieldList
 			$app->close();
 			
 		}#END IF
+		
 		
 		
 		return $options;

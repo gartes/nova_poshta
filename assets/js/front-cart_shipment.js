@@ -19,16 +19,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function cart_shipmentInit(){
         addListener();
+
         if (NovaPoshtaData.administrator){
             document.addEventListener("GNZ11Loaded", function () {
                 cityText_init();
+
             });
-
-            // GNZ11Loaded
-
-
+        }else{
+            // Проверить отмеченный чекбокс и снять если отмеченно
+            check_checked()
         }
-
     }
 
     function addListener() {
@@ -37,9 +37,36 @@ document.addEventListener("DOMContentLoaded", function () {
         $b.on('change' , '#shipment_id_'+shipmentmethod_id , loadModal )
             .on('change' , '[name="novaposhta[serviceType]"]' , stritAutocomplite );
 
-
-
+        // Включить поддержку атозаполнения улиц на стороне админа
+        if (NovaPoshtaData.administrator){
+            var type = +$('[name="novaposhta[serviceType]"]:checked').val();
+            if (!type){
+                document.addEventListener("GNZ11Loaded", function () {
+                    stritAutocomplite();
+                });
+            }
+        }
     }
+
+    /**
+     * Проверить отмеченный чекбокс и снять если отмеченно
+     */
+    function check_checked() {
+        var $ = jQuery ;
+        var np_el = $('#shipment_id_'+shipmentmethod_id) ;
+        if (!np_el[0]){
+            var I = setInterval(function () {
+                np_el = $('#shipment_id_'+shipmentmethod_id) ;
+                if (np_el[0]){
+                    clearInterval(I);
+                    if (np_el.prop('checked')){
+                        np_el.prop('checked' , false )
+                    }
+                }
+            },500);
+        }
+    }
+
     /*
 	* Поиск Улицы
 	*/
@@ -77,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-                    VMUPS.Novaposhta.queryNovaposhta(params).done(function (sdata) {
+                    queryNovaposhta(params).done(function (sdata) {
                         var obj = [];
                         $.each(sdata.data, function  (i,street){
 
@@ -103,99 +130,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log(ui)
                     },
             });
-
-
-
-
         })
     }
 
-    var VMUPS = {
-        Novaposhta :{}
-    };
-    /*
-    *Отправить запрос к API новой почты
-    */
-    VMUPS.Novaposhta.queryNovaposhta = function  (params ){
-        var $ = jQuery;
-        return $.ajax({
-            url: 'https://api.novaposhta.ua/v2.0/json/?' + $.param(params),
-            beforeSend:  function (xhrObj) {
-                    xhrObj.setRequestHeader('Content-Type', 'application/json');
-                    return Number;
-            },
-            type: 'POST',
-            dataType: 'jsonp',
-            data: '{body}'
-        })
-    };
-
-    function loadWarehouses(evt) {
-        var $ = jQuery ;
-        var gnz11 = new GNZ11();
-        var cityRef
-        if ( typeof  evt === 'undefined'){
-            cityRef = $('#cityRef').val();
-        }else {
-            var $sel =  $(this).find('option:selected') ;
-            cityRef = $sel.val();
-        }
-        console.log(evt)
+    var VMUPS = { Novaposhta :{} };
 
 
 
 
 
-
-        var AjaxSetting = {} ;
-        // var WarehousesText = $sel.text();
-
-        var $warehouses_ind = $('[name*="warehouses_ind"]') ;
-        if (cityRef.length){
-            $warehouses_ind.val(1)
-        }else{
-            $warehouses_ind.val(0)
-        }
-        $warehouses_ind.trigger('change');
-        $('[name="cityRef"]').val(cityRef);
-
-        var data = {
-            'option': 'com_ajax',
-            'group' : 'vmshipment',
-            'plugin': 'nova_pochta',
-            'format': 'json',
-            'virtuemart_shipmentmethod_id': shipmentmethod_id ,
-            'opt'   : {
-                'task': 'loadWarehouses',
-                'cityRef': cityRef ,
-            }
-        };
-        // loadWarehouses
-        gnz11.getModul('Ajax' , AjaxSetting ).then(function(Ajax) {
-            Ajax.send(data).then(function (res) {
-                if (!res.success){
-                    alert('Error Load Warehouses Nova pochta');
-                    return
-                }
-                var WarehousesEl = $('#novaposhta_warehouses') ;
-                WarehousesEl.empty();
-                $.each(res.data.WarehousesList,function (i,a) {
-                    $('<option />', { value : i, text  : a , }).appendTo(WarehousesEl);
-                });
-                WarehousesEl.trigger('chosen:updated');
-
-
-                 //  $('#novaposhta_warehouses').empty().append($(html)) ;
-
-
-
-
-            }, function (err) {
-                console.error(err)
-            })
-        })
-
-    }
     /**
      * Загрузка модалки с выбором метода доставки
      */
@@ -205,6 +148,9 @@ document.addEventListener("DOMContentLoaded", function () {
         var AjaxSetting = {} ;
 
         var NpSettingPlg = Joomla.getOptions('NpSettingPlg');
+
+        console.log(NpSettingPlg);
+
 
         var data = {
             'option': 'com_ajax',
@@ -235,9 +181,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     setChosen();
                     return;
                 }
-
-
-
                 gnz11.__loadModul.Fancybox().then(function(a){
                     a.open(res.data , {
                         baseClass: 'nova_pochtaModalBody' ,
@@ -278,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }else {
                 cityText_init();
             }
-            $('#novaposhta_warehouses').on('change' , {event} , function (){}).chosen();
+            $('[name="novaposhta[warehouses]"]').on('change' , {event} , function (){}).chosen();
         });
     }
 
@@ -338,68 +281,178 @@ document.addEventListener("DOMContentLoaded", function () {
 
     };// end function
 
-
-    function	changeNovaposhtaCityText( event, ui ){
-        console.log( ui.item )
-
-        // VMUPS.SaveShipmentmethod();
-    }// end function
-
-
-
-
-
-    function	sourceNovaposhtaCityText (request, response){
-        var $ = jQuery;
-        var params ={
-            "modelName": "Address",
-            "calledMethod": "searchSettlements",
-            "methodProperties": {
-                "CityName": request.term,
-                "Limit": 20
-            },
-        };
-        VMUPS.Novaposhta.queryNovaposhta(params).done(function(sdata){
-            var obj = [];
-            $.each(sdata.data, function  (i,arr){
-                $.each(arr.Addresses , function  (ind,punct){
-                    var Region = punct.Region+' р-н ';
-                    if( punct.SettlementTypeCode === 'м.' ){
-                        Region = '';
-                    } // end if
-                    var countWarehouses = '<div attr-name="'+punct.MainDescription+'" class="countWarehouses">'+punct.Warehouses+' отд.</div>';
-                    if(punct.Warehouses===0){
-                        countWarehouses = ' <div class="countWarehouses">(курьерская доставка)</div>'
-                    } // end if
-                    var area = ' - '+punct.Area+' обл.,';
-                    if( !punct.Area ){
-                        area='';
-                    } // end if
-                    obj[ind] = {
-                        cityName :punct.MainDescription ,
-                        label : punct.MainDescription + area + Region /*+ countWarehouses*/ ,
-                        value : punct.MainDescription + area ,
-                        DeliveryCity: punct.DeliveryCity ,
-                        SettlementRef:punct.Ref,
-                        Ref:punct.Ref ,
-                        countWarehouses:punct.Warehouses
-                    };
-                })// end function
-            });// end function
-
-
-            console.log( obj ) ;
-            response( obj );
-        }).fail(function () {alert('error');});
-    }// end function
-
-
 });
 
 
+/**
+ * Загрузка складов в городе.
+ * @param Elem - Елемент в которы загружить склады
+ */
+function loadWarehouses(Elem   ) {
+    var $ = jQuery ;
+    var gnz11 = new GNZ11();
+    var NovaPoshtaData = Joomla.getOptions('NpSettingPlg');
+    var cityRef;
+    var WarehousesEl ;
+
+    // Если стиль выбора города "TEXT - Autocomplite"
+    if (NovaPoshtaData.city_celect_style){
+        switch ( $(Elem).attr('id')  ) {
+            case 'novaposhtaSenderAddress':
+                cityRef = $('[name="novaposhta[CitySender]"]').val();
+                WarehousesEl = $(Elem) ;
+                break ;
+
+            default:
+                cityRef = $('#cityRef').val();
+                WarehousesEl = $('[name="novaposhta[warehouses]"]') ;
+                var $warehouses_ind = $('[name*="warehouses_ind"]') ;
+        }
+
+        console.log( Elem )
+    }else {
+        cityRef =  $(this).find('option:selected').val() ;
+        WarehousesEl = $('[name="novaposhta[warehouses]"]') ;
+        $('[name="cityRef"]').val(cityRef);
+
+    }
+
+    var AjaxSetting = {} ;
+
+
+/*
+    if (cityRef.length){
+        $warehouses_ind.val(1)
+    }else{
+        $warehouses_ind.val(0)
+    }
+    $warehouses_ind.trigger('change');
+    */
 
 
 
+
+
+
+    var data = {
+        'option': (NovaPoshtaData.administrator?'com_virtuemart':'com_ajax'),
+        'group' : 'vmshipment',
+        'plugin': 'nova_pochta',
+        'format': 'json',
+        'virtuemart_shipmentmethod_id': NovaPoshtaData.virtuemart_shipmentmethod_id ,
+        'opt'   : {
+            'task': 'loadWarehouses',
+            'cityRef': cityRef ,
+        }
+    };
+    if (NovaPoshtaData.administrator){
+        data.view = 'nova_pochta_extended' ;
+        data.task = 'loadWarehouses' ;
+    }
+
+
+
+    // loadWarehouses
+    gnz11.getModul('Ajax' , AjaxSetting ).then(function(Ajax) {
+        Ajax.send(data).then(function (res) {
+            if (!res.success){
+                alert('Error Load Warehouses Nova pochta');
+                return
+            }
+
+
+
+            WarehousesEl.empty();
+            $.each(res.data.WarehousesList,function (i,a) {
+                $('<option />', { value : i, text  : a , }).appendTo(WarehousesEl);
+            });
+
+            WarehousesEl.trigger('chosen:updated').trigger("liszt:updated");
+
+        }, function (err) {
+            console.error(err)
+        })
+    })
+
+}
+
+/*
+ *Отправить запрос к API новой почты
+ *
+ */
+queryNovaposhta = function  (params ){
+    var $ = jQuery;
+    return $.ajax({
+        url: 'https://api.novaposhta.ua/v2.0/json/?' + $.param(params),
+        beforeSend:  function (xhrObj) {
+            xhrObj.setRequestHeader('Content-Type', 'application/json');
+            return Number;
+        },
+        type: 'POST',
+        dataType: 'jsonp',
+        data: '{body}'
+    })
+};
+
+/**
+ * Создание запроса для автозаполнителя городов
+ * @param request
+ * @param response
+ */
+function sourceNovaposhtaCityText (request, response){
+    var $ = jQuery;
+    var params ={
+        "modelName": "Address",
+        "calledMethod": "searchSettlements",
+        "methodProperties": {
+            "CityName": request.term,
+            "Limit": 20
+        },
+    };
+    queryNovaposhta(params).done(function(sdata){
+        var obj = [];
+        $.each(sdata.data, function  (i,arr){
+            $.each(arr.Addresses , function  (ind,punct){
+                var Region = punct.Region+' р-н ';
+                if( punct.SettlementTypeCode === 'м.' ){
+                    Region = '';
+                } // end if
+                var countWarehouses = '<div attr-name="'+punct.MainDescription+'" class="countWarehouses">'+punct.Warehouses+' отд.</div>';
+                if(punct.Warehouses===0){
+                    countWarehouses = ' <div class="countWarehouses">(курьерская доставка)</div>'
+                } // end if
+                var area = ' - '+punct.Area+' обл.,';
+                if( !punct.Area ){
+                    area='';
+                } // end if
+                obj[ind] = {
+                    cityName :punct.MainDescription ,
+                    label : punct.MainDescription + area + Region /*+ countWarehouses*/ ,
+                    value : punct.MainDescription + area ,
+                    DeliveryCity: punct.DeliveryCity ,
+                    SettlementRef:punct.Ref,
+                    Ref:punct.Ref ,
+                    countWarehouses:punct.Warehouses
+                };
+            })// end function
+        });// end function
+
+
+        console.log( obj ) ;
+        response( obj );
+    }).fail(function () {alert('error');});
+}// end function
+
+/**
+ * событие автокомплита
+ * @param event
+ * @param ui
+ */
+function	changeNovaposhtaCityText( event, ui ){
+    console.log( ui.item )
+
+    // VMUPS.SaveShipmentmethod();
+}// end function
 
 
 

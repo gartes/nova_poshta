@@ -9,21 +9,35 @@
 	
 	namespace Plg\Np;
 	
-	
-	
-	
-	
 	use Exception;
 	use GNZ11\Core\Js;
 	use JLoader;
 	use JFactory;
 	use JUri;
+	use JText;
 	
 	class Helper
 	{
 		private $app;
 		public static $instance;
 		public static $options ;
+		
+		public static $CityRef ;
+		public static $WarehousesRef ;
+		/**
+		 * Идентификатор города отправителя
+		 * @since 3.9
+		 * @var Helper
+		 */
+		public static $CitySender ;
+		/**
+		 * Идентификатор адреса отправителя
+		 * @since 3.9
+		 * @var Helper
+		 */
+		public static $SenderAddress ;
+		
+		
 		
 		/**
 		 * helper constructor.
@@ -53,7 +67,54 @@
 			}
 			
 			return self::$instance;
+		}
+		
+		/**
+		 * Идентификатор города отправителя
+		 * @param   mixed  $CitySender
+		 * @since 3.9
+		 */
+		public static function setCitySender ( $CitySender )
+		{
+			self::$CitySender = $CitySender;
+		}
+		
+		/**
+		 * Идентификатор адреса отправителя
+		 * @param   Helper  $SenderAddress
+		 * @since 3.9
+		 */
+		public static function setSenderAddress (  $SenderAddress )
+		{
+			self::$SenderAddress = $SenderAddress;
+		}
+		
+		
+		
+		
+		/**
+		 * @param   mixed  $CityRef
+		 * @since 3.9
+		 */
+		public static function setCityRef ( $CityRef )
+		{
+			self::$CityRef = $CityRef;
+		}
+		
+		/**
+		 * @param   mixed  $WarehousesRef
+		 * @since 3.9
+		 */
+		public static function setWarehousesRef ( $WarehousesRef )
+		{
+			self::$WarehousesRef = $WarehousesRef;
 		}#END FN
+		
+		
+		
+		
+		
+		
 		
 		/**
 		 * Html Разметка в бланке заказа Админ.
@@ -67,7 +128,9 @@
 		public static function OrderShipmentHtmlBE($shipinfo){
 			$doc = JFactory::getDocument();
 			$doc->addScript( '/plugins/vmshipment/nova_pochta/assets/js/front-cart_shipment.js' );
+			$doc->addScript('/plugins/vmshipment/nova_pochta/assets/js/admin-order_edit.js');
 			$doc->addStyleSheet('/plugins/vmshipment/nova_pochta/assets/css/front-cart_shipment.css');
+			$doc->addStyleSheet('/plugins/vmshipment/nova_pochta/assets/css/admin-order_edit.css');
 			
 			JLoader::registerNamespace( 'GNZ11' , JPATH_LIBRARIES . '/GNZ11' , $reset = false , $prepend = false , $type = 'psr4' );
 			Js::instance();
@@ -78,17 +141,13 @@
 			return $ret ;
 		}
 		
-		
-		
-		
-		public static function getSetting($virtuemart_shipmentmethod_id){
-		
+		public static function setPluginSetting($plugin){
+			self::$options = $plugin ;
 		}
-		
 		
 		public static function setSetting(){
 			$opt = self::$options ;
-			$app = \JFactory::getApplication() ;
+			$app = JFactory::getApplication() ;
 			
 			
 			$doc = JFactory::getDocument();
@@ -103,6 +162,62 @@
 			
 			
 		}
+		
+		
+		public function adminSaveOrder(){
+			
+			$d_form = $this->app->input->get('form' , false , 'RAW' );
+			
+			$params = array();
+			parse_str($d_form, $params);
+			
+			$virtuemart_order_id = $this->app->input->get('virtuemart_order_id' , null , 'INT');
+			if( !$virtuemart_order_id )
+			{
+				echo new \JResponseJson( null , JText::_( 'NOVA_POCHTA_SAVE_ERROR_ORDER_ID' ) , true );
+				$this->app->close();
+			}#END IF
+			
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true) ;
+			
+			// Поля для обновления
+			$fields = array(
+				$db->quoteName('ref_city') . ' = ' . $db->quote($params['cityRef']) ,
+				$db->quoteName('novaposhta') . ' = ' . $db->quote( json_encode( $params['novaposhta'] ) ) ,
+			);
+			// Условия обновления
+			$conditions = array(
+				$db->quoteName('virtuemart_order_id') . ' = '  . $db->quote($virtuemart_order_id)
+			
+			);
+			$query->update($db->quoteName('#__virtuemart_shipment_plg_nova_pochta'))->set($fields)->where($conditions);
+			//  echo $query->dump();
+			// Устанавливаем и выполняем запрос
+			$db->setQuery($query);
+			try
+			{
+				$db->execute();
+			}
+			catch( \Exception $e )
+			{
+				// Executed only in PHP 5, will not be reached in PHP 7
+				echo 'Выброшено исключение: ' , $e->getMessage() , "\n";
+			}
+			catch( \Throwable $e )
+			{
+				// Executed only in PHP 7, will not match in PHP 5
+				echo 'Выброшено исключение: ' , $e->getMessage() , "\n";
+				echo '<pre>';
+				print_r( $e );
+				echo '</pre>' . __FILE__ . ' ' . __LINE__;
+			}
+			
+			$this->app->enqueueMessage( JText::sprintf('NOVA_POCHTA_SAVE_RESULT' , $db->getAffectedRows()  ));
+			return true ;
+		}
+		
+		
 		
 		/**
 		 * Подгрузка складов в городе

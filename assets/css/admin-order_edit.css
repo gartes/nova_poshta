@@ -1,0 +1,37 @@
+#cartModalBody .control-group {
+    display: block;
+    float: left;
+    width: 100%;
+}
+#cartModalBody .controls fieldset {
+    border: none;
+}
+#cartModalBody .controls fieldset label {
+    margin: 0;
+    width: 100px;
+}
+#cartModalBody .control-label {
+
+}
+#cartModalBody .controls {
+    float: left;
+    width: calc(100% - 255px);
+}
+#cartModalBody .controls i {
+    float: left;
+    display: block;
+}
+#cartModalBody fieldset#novaposhta_serviceType {
+    width: 100%;
+}
+
+#cartModalBody fieldset#novaposhta_serviceType label {
+    margin: 0;
+    max-width: 100px;
+}
+#cartModalBody .controls input[type=text] {
+    float: left;
+    display: block;
+    /* padding: 0; */
+    width: 250px;
+}

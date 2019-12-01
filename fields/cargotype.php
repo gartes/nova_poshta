@@ -8,6 +8,9 @@
  */
 
 defined('JPATH_PLATFORM') or die;
+	
+	
+
 
 /**
  * Form Field class for the Joomla Platform.
@@ -15,7 +18,7 @@ defined('JPATH_PLATFORM') or die;
  *
  * @since  1.7.0
  */
-class JFormFieldCitylist extends JFormFieldList
+class JFormFieldCargotype extends JFormFieldList
 {
 	/**
 	 * The form field type.
@@ -23,80 +26,18 @@ class JFormFieldCitylist extends JFormFieldList
 	 * @var    string
 	 * @since  1.7.0
 	 */
-	protected $type = 'Citylist';
+	protected $type = 'Cargotype';
 
-	protected static $settingPLG ;
-	
-	/**
-	 * Настройки
-	 *
-	 * @throws Exception
-	 * @since version
-	 */
-	protected static function getSetting(){
-		$app                          = \JFactory::getApplication();
-		if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
-		VmConfig::loadConfig();
-		
-		$virtuemart_shipmentmethod_id = $app->input->get( 'virtuemart_shipmentmethod_id' , null , 'INT' );
-		if(  !$virtuemart_shipmentmethod_id )
-		{
-			throw new Exception('Err: Dont virtuemart shipmentmethod id In JFormFieldCitylist.' , 500 ) ;
-		}#END IF
-		
-		$shipmentModel = VmModel::getModel( 'Shipmentmethod' );
-		$shipmentModel->setId( $virtuemart_shipmentmethod_id );
-		self::$settingPLG = $shipmentModel->getShipment();
-		
-		
-	}
-	
 	/**
 	 * Method to get the field input markup for a generic list.
 	 * Use the multiple attribute to enable multiselect.
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @throws Exception
 	 * @since   3.7.0
 	 */
 	protected function getInput()
 	{
-		
-		self::getSetting();
-		$setting = self::$settingPLG ;
-		
-		$app = \JFactory::getApplication() ;
-		$ref_city = $app->input->get('ref_city' , null ) ;
-		
-		$City = null ;
-		if( $ref_city )
-		{
-			list( $lp , $options ) = $this->getPrefix();
-			$Address = \Plg\Np\Api::getAddress( $setting->apikey );
-			$CityList = $Address::getSettlements(['Ref'=> $ref_city]);
-			$City = $CityList->data[0]->{'Description'.$lp} . ' '. $CityList->data[0]->{'AreaDescription'.$lp} ;
-//			echo'<pre>';print_r( $CityList->data[0] );echo'</pre>'.__FILE__.' '.__LINE__;
-//			die(__FILE__ .' '. __LINE__ );
-		}#END IF
-		
-		
-		
-		
-		if( !$setting->city_celect_style )
-		{
-			return '<input type="text"
-						name="cityText"
-						id="cityText"
-						value="'.$City.'"
-						class="ac_Settlements cityText"
-						autocomplete="off">
-						
-					<i class="auto_control clean icon-cancel" onclick="jQuery(this).prev(\'input\').val(\'\')"></i>
-						
-						' ;
-		}#END IF
-		
 		
 		
 		
@@ -118,9 +59,7 @@ class JFormFieldCitylist extends JFormFieldList
 
 		// Initialize JavaScript field attributes.
 		$attr .= $this->onchange ? ' onchange="' . $this->onchange . '"' : '';
-		
-		
-		
+
 		// Get the field options.
 		$options = (array) $this->getOptions();
 
@@ -158,8 +97,23 @@ class JFormFieldCitylist extends JFormFieldList
 			$listoptions['list.translate'] = false;
 			$listoptions['option.attr'] = 'optionattr';
 			$listoptions['list.attr'] = trim($attr);
-
-			$html[] = JHtml::_('select.genericlist', $options, $this->name, $listoptions);
+			
+			$WarehousesRef = \Plg\Np\Helper::$WarehousesRef ;
+			
+			if( $this->id == 'novaposhta_SenderAddress' )
+			{
+				$WarehousesRef = \Plg\Np\Helper::$SenderAddress ;
+			}#END IF
+			
+			
+			$html[] = JHtml::_('select.genericlist',
+				$options,
+				$this->name,
+				$listoptions ,
+				'value',
+				'text' ,
+				$WarehousesRef
+			);
 		}
 
 		return implode($html);
@@ -175,55 +129,14 @@ class JFormFieldCitylist extends JFormFieldList
 	 */
 	protected function getOptions()
 	{
-		$app                          = \JFactory::getApplication();
-		$format = $app->input->get( 'format' , 'hrml' , 'STRING' ) ;
-		$opt = $app->input->get( 'opt' , [] , 'ARRAY' ) ;
 		
-		
-		
-		if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
-		VmConfig::loadConfig();
-		
-		
-		
-		$virtuemart_shipmentmethod_id = $app->input->get( 'virtuemart_shipmentmethod_id' , null , 'INT' );
-		if(  !$virtuemart_shipmentmethod_id )
-		{
-			throw new Exception('Err: Dont virtuemart shipmentmethod id In JFormFieldCitylist.' , 500 ) ;
-		}#END IF
-		
-		
-		
-		
-		$shipmentModel = VmModel::getModel( 'Shipmentmethod' );
-		$shipmentModel->setId( $virtuemart_shipmentmethod_id );
-		$shipmentMethod = $shipmentModel->getShipment();
-		
-		
-		list( $lp , $options ) = $this->getPrefix();
-		
-		
-		if( $format == 'raw' && $opt[ 'task' ] == 'loadWarehouses'  )
-		{
-			return null;
-		}#END IF
-		
-		if( !$shipmentMethod->city_celect_style )
-		{
-			return null;
-		}#END IF
-		
-		
-		$Address = \Plg\Np\Api::getAddress( $shipmentMethod->apikey );
-		$CityList = $Address::getCityList();
-		
-		
-		
-		foreach( $CityList->data as $datum )
-		{
-			$options[$datum->Ref] = $datum->{'Description'.$lp} .' '. $datum->{'SettlementTypeDescription'.$lp} ;
-		}#END FOREACH
-		
+		$options = [
+			'Cargo' => 'Вантаж' ,
+			'Documents' => 'Документи' ,
+			'TiresWheels' => 'Шини-диски' ,
+			'Pallet' => 'Палети' ,
+			'Parcel' => 'Посилка' ,
+			];
 		
 		
 		return $options;
@@ -271,25 +184,5 @@ class JFormFieldCitylist extends JFormFieldList
 		}
 
 		return parent::__get($name);
-	}
-	
-	/**
-	 *
-	 * @return array
-	 *
-	 * @since version
-	 */
-	protected function getPrefix (): array
-	{
-		$tagLanguage = JFactory::getLanguage()->getTag();
-		$lp          = null;
-		$options     = [ '' => 'Виберіть місто...' ];
-		if( $tagLanguage == 'ru-RU' )
-		{
-			$lp      = 'Ru';
-			$options = [ '' => 'Выберите город...' ];
-		}
-		
-		return [ $lp , $options ];#END IF
 	}
 }

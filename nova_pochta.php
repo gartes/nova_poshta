@@ -44,8 +44,9 @@
 		 * @throws Exception
 		 * @since 3.9
 		 */
-		function __construct ( & $subject , $config )
+		function __construct ( &$subject , $config )
 		{
+			
 			parent::__construct( $subject , $config );
 			$this->_loggable   = true;
 			$this->_tablepkey  = 'id';
@@ -56,16 +57,10 @@
 			$this->setConfigParameterable( $this->_configTableFieldName , $varsToPush );
 			$this->setConvertable( [ 'min_amount' , 'max_amount' , 'shipment_cost' , 'package_fee' ] );
 			
-			$Method = $this->getPluginMethod(2) ;
 			JLoader::registerNamespace('Plg\Np',JPATH_PLUGINS.'/vmshipment/nova_pochta/helpers',$reset=false,$prepend=false,$type='psr4');
-			$this->Helper = \Plg\Np\Helper::instance( $Method );
+			$this->Helper = \Plg\Np\Helper::instance(  );
 			//vmdebug('Muh constructed plgVmShipmentWeight_countries',$varsToPush);
 		}
-		
-		
-		
-		
-		
 		
 		/**
 		 * Create the table for this plugin if it does not yet exist.
@@ -191,25 +186,46 @@
 		}
 		
 		/**
-		 * This method is fired when showing the order details in the backend.
-		 * It displays the shipment-specific data.
-		 * NOTE, this plugin should NOT be used to display form fields, since it's called outside
-		 * a form! Use plgVmOnUpdateOrderBE() instead!
+		 * Этот метод запускается при отображении деталей заказа в бэкэнде.
+		 * Отображает данные, относящиеся к конкретной поставке.
+		 * ПРИМЕЧАНИЕ: этот плагин НЕ должен использоваться для отображения полей формы, так как он вызывается снаружи
+		 * форма! Используйте взамен plgVmOnUpdateOrderBE ()!
 		 *
 		 * @param   integer  $virtuemart_order_id           The order ID
 		 * @param   integer  $virtuemart_shipmentmethod_id  The order shipment method ID
 		 *
 		 * @return mixed Null for shipments that aren't active, text (HTML) otherwise
+		 * @throws Exception
+		 * @since  3.9
 		 * @author Valerie Isaksen
 		 */
 		public function plgVmOnShowOrderBEShipment ( $virtuemart_order_id , $virtuemart_shipmentmethod_id )
 		{
-			
 			if( !( $this->selectedThisByMethodId( $virtuemart_shipmentmethod_id ) ) )
 			{
 				return null;
 			}
+			
+			$Method = $this->getPluginMethod( $virtuemart_shipmentmethod_id ) ;
+			
+			
+			
 			$html = $this->getOrderShipmentHtml( $virtuemart_order_id );
+			
+			
+			
+			
+			
+			
+			$this->Helper::setPluginSetting($Method) ;
+			$this->Helper::setSetting($Method) ;
+			
+			$doc = JFactory::getDocument();
+			$NpSettingPlg = $doc->getScriptOptions('NpSettingPlg');
+			$NpSettingPlg['virtuemart_order_id'] = $virtuemart_order_id ;
+			$doc->addScriptOptions('NpSettingPlg' , $NpSettingPlg );
+			
+			
 			
 			return $html;
 		}
@@ -222,6 +238,7 @@
 		 */
 		function getOrderShipmentHtml ( $virtuemart_order_id )
 		{
+			
 			
 			$db = JFactory::getDBO();
 			$q  = 'SELECT * FROM `' . $this->_tablename . '` ' . 'WHERE `virtuemart_order_id` = ' . $virtuemart_order_id;
@@ -242,6 +259,19 @@
 			
 			$html = '<table class="adminlist table">' . "\n";
 			$html .= $this->getHtmlHeaderBE();
+			
+			$shipinfo->novaposhta = json_decode( $shipinfo->novaposhta ) ;
+			$app = \JFactory::getApplication() ;
+			$app->input->set('novaposhta' , $shipinfo->novaposhta );
+			
+			$this->Helper::setCityRef( $shipinfo->ref_city );
+			$this->Helper::setWarehousesRef( $shipinfo->novaposhta->warehouses );
+			$this->Helper::setCitySender( $shipinfo->novaposhta->CitySender );
+			$this->Helper::setSenderAddress( $shipinfo->novaposhta->SenderAddress );
+			
+			
+			
+			echo'<pre>';print_r( $shipinfo );echo'</pre>'.__FILE__.' '.__LINE__;
 			
 			$html .= $this->Helper::OrderShipmentHtmlBE($shipinfo) ;
 			
@@ -582,7 +612,6 @@
 			$htmlIn[] = '<h1>xxxxxxxxx</h1>' ;
 			
 			
-			
 			return $this->displayListFE( $cart , $selected , $htmlIn );
 		}
 		
@@ -598,22 +627,19 @@
 		 */
 		protected function renderPluginName ($plugin) {
 			
-			
-			
 			$c = array();
 			$idN = 'virtuemart_'.$this->_psType.'method_id';
 			if(isset($c[$this->_psType][$plugin->$idN])){
 				return $c[$this->_psType][$plugin->$idN];
 			}
 			
+			# Загрузить в Helper Настройки Способа Доставки
+			$this->Helper->setPluginSetting($plugin);
+			# Установить JS OPT
+			$this->Helper->setSetting();
 			
 			$addHtml = $this->Helper::renderPluginName( $plugin );
 			
-			
-			
-			
-			//			echo'<pre>';print_r( $plugin->virtuemart_shipmentmethod_id );echo'</pre>'.__FILE__.' '.__LINE__;
-//			die(__FILE__ .' '. __LINE__ );
 			
 			$plugin_name = $this->_psType . '_name';
 			
@@ -629,15 +655,25 @@
 			
 		}
 		
-		
+		/**
+		 * Точка входа AJAX
+		 *
+		 * @throws Exception
+		 * @since version
+		 */
 		public function onAjaxNova_pochta()
 		{
 			if( !JSession::checkToken( 'get' ) ) exit( 'ERR: check Token!!!' );
 			$app = JFactory::getApplication();
 			$opt = $app->input->get( 'opt' , [] , 'ARRAY' );
+			$virtuemart_shipmentmethod_id = $app->input->get( 'virtuemart_shipmentmethod_id' , null , 'INT' );
 			
+			if( $virtuemart_shipmentmethod_id )
+			{
+				$Method = $this->getPluginMethod( $virtuemart_shipmentmethod_id ) ;
+				$this->Helper::setPluginSetting($Method);
+			}#END IF
 			
-			echo'<pre>';print_r( $opt );echo'</pre>'.__FILE__.' '.__LINE__;
 			
 			
 			

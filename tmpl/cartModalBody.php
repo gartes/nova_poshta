@@ -8,41 +8,39 @@
 	 */
 	
 extract ($displayData);
-
+	$app = \JFactory::getApplication() ;
+	$admin = $app->isClient('administrator') ;
 
 ?>
 
 <div id="cartModalBody">
 	<?php
-		if( \Plg\Np\Helper::$options->form_style )
+        
+		
+		if( \Plg\Np\Helper::$options->form_style   )
 		{
 	?>
-    <form id="form-cartModalBody" >
+            <form id="form-cartModalBody" >
 		<?php
 			}#END IF
 		?>
 	
 		<div class="f-cont">
 			<?= $formField ; ?>
-			
-			<?php echo JHtml::_( 'form.token' ); ?>
-
-
-        
-            
-        </div>
+			<?= JHtml::_( 'form.token' ); ?>
+		</div>
 	    <?php
-		    if( \Plg\Np\Helper::$options->form_style )
+		    if( \Plg\Np\Helper::$options->form_style   )
 		    {
 	    ?>
-        <div class="btn-wrapper" id="toolbar-apply">
-            <button onclick="" class="btn btn-small button-apply btn-success">
+            <div class="btn-wrapper" id="toolbar-apply">
+            <button id="NpSave" onclick="" class="btn btn-small button-apply btn-success">
                 <span class="icon-apply icon-white" aria-hidden="true"></span>
                 Сохранить</button>
         </div>
-    </form>
+            </form>
 		    <?php
-			    }#END IF
+		    }#END IF
 		    ?>
     
 </div>
