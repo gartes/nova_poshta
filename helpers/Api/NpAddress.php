@@ -34,8 +34,6 @@
 			$data->setCityRef($cityRef);
 			$result = \NovaPoshta\ApiModels\Address::getWarehouses($data);
 			return $result ;
-			// $addressSender = $result->data[5]->Ref;
-			
 		}
 		
 		/**
@@ -44,11 +42,38 @@
 		 *
 		 * @since version
 		 */
-		public static function getCityList(){
-			
-			$result = \NovaPoshta\ApiModels\Address::getCities();
+		public static function getCityList( $param ){
+			$data = new \NovaPoshta\MethodParameters\Address_getCities();
+			if( isset($param['Ref']) )
+			{
+				$data->setRef($param['Ref']);
+			}#END IF
+			$result = \NovaPoshta\ApiModels\Address::getCities($data);
 			return $result  ;
 		}
+		
+		/**
+		 * Вызвать метод getSettlements() - загрузить справочник населенных пунктов Украины
+		 *
+		 *
+		 */
+		public static function getSettlements($param){
+			$data = new \NovaPoshta\MethodParameters\Address_getCities();
+			if( isset($param['Ref']) )
+			{
+				$data->setRef($param['Ref']);
+			}#END IF
+			
+			
+			$result = \NovaPoshta\ApiModels\Address::getSettlements($data);
+			return $result  ;
+		}
+		
+		
+		
+	
+		
+		
 		
 		
 	}

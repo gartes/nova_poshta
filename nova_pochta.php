@@ -2,6 +2,10 @@
 	
 	defined( '_JEXEC' ) or die( 'Restricted access' );
 	
+	if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
+	VmConfig::loadConfig();
+	
+	
 	/**
 	 * Shipment plugin for weight_countries shipments, like regular postal services
 	 *
@@ -42,33 +46,19 @@
 		 */
 		function __construct ( & $subject , $config )
 		{
-			
 			parent::__construct( $subject , $config );
-			
-			
 			$this->_loggable   = true;
 			$this->_tablepkey  = 'id';
 			$this->_tableId    = 'id';
 			$this->tableFields = array_keys( $this->getTableSQLFields() );
 			$varsToPush        = $this->getVarsToPush();
-			
-			
-			
 			$this->addVarsToPushCore( $varsToPush , 0 );
-			
 			$this->setConfigParameterable( $this->_configTableFieldName , $varsToPush );
 			$this->setConvertable( [ 'min_amount' , 'max_amount' , 'shipment_cost' , 'package_fee' ] );
 			
 			$Method = $this->getPluginMethod(2) ;
 			JLoader::registerNamespace('Plg\Np',JPATH_PLUGINS.'/vmshipment/nova_pochta/helpers',$reset=false,$prepend=false,$type='psr4');
 			$this->Helper = \Plg\Np\Helper::instance( $Method );
-			
-			
-			
-//			echo'<pre>';print_r( $Method );echo'</pre>'.__FILE__.' '.__LINE__;
-//			die(__FILE__ .' '. __LINE__ );
-//			echo'<pre>';print_r( $this->Helper );echo'</pre>'.__FILE__.' '.__LINE__;
-//			die(__FILE__ .' '. __LINE__ );
 			//vmdebug('Muh constructed plgVmShipmentWeight_countries',$varsToPush);
 		}
 		
@@ -228,6 +218,7 @@
 		 * @param $virtuemart_order_id
 		 *
 		 * @return string
+		 * @throws Exception
 		 */
 		function getOrderShipmentHtml ( $virtuemart_order_id )
 		{
@@ -251,6 +242,12 @@
 			
 			$html = '<table class="adminlist table">' . "\n";
 			$html .= $this->getHtmlHeaderBE();
+			
+			$html .= $this->Helper::OrderShipmentHtmlBE($shipinfo) ;
+			
+			
+			
+			
 			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_SHIPPING_NAME' , $shipinfo->shipment_name );
 			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_WEIGHT' , $shipinfo->order_weight . ' ' . ShopFunctions::renderWeightUnit( $shipinfo->shipment_weight_unit ) );
 			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_COST' , $currency->priceDisplay( $shipinfo->shipment_cost ) );
@@ -633,15 +630,21 @@
 		}
 		
 		
-		public function onAjaxNova_pochta(){
-			if(!JSession::checkToken('get')) exit;
-			$app = JFactory::getApplication() ;
+		public function onAjaxNova_pochta()
+		{
+			if( !JSession::checkToken( 'get' ) ) exit( 'ERR: check Token!!!' );
+			$app = JFactory::getApplication();
+			$opt = $app->input->get( 'opt' , [] , 'ARRAY' );
 			
-			$opt = $app->input->get('opt' , [] , 'ARRAY') ;
 			
-			if( !isset($opt['task']) ) return ; #END IF
-			if( !method_exists($this->Helper ,$opt['task']) ) {
-				echo new JResponseJson(null , JText::_('NOVA_POCHTA_MY_TASK_ERROR'), true);
+			echo'<pre>';print_r( $opt );echo'</pre>'.__FILE__.' '.__LINE__;
+			
+			
+			
+			if( !isset( $opt[ 'task' ] ) ) return; #END IF
+			if( !method_exists( $this->Helper , $opt[ 'task' ] ) )
+			{
+				echo new JResponseJson( null , JText::_( 'NOVA_POCHTA_MY_TASK_ERROR' ) , true );
 				$app->close();
 			} #END IF
 			try
@@ -653,7 +656,7 @@
 			catch( Exception $e )
 			{
 				// Executed only in PHP 5, will not be reached in PHP 7
-				echo new JResponseJson(null , $e->getMessage() , true);
+				echo new JResponseJson( null , $e->getMessage() , true );
 				$app->close();
 				
 				
@@ -661,7 +664,7 @@
 			catch( Throwable $e )
 			{
 				// Executed only in PHP 7, will not match in PHP 5
-				echo new JResponseJson(null , $e->getMessage() , true);
+				echo new JResponseJson( null , $e->getMessage() , true );
 				$app->close();
 			}
 		}

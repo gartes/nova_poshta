@@ -1,24 +1,34 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+
+
+    var NovaPoshtaData = Joomla.getOptions('NpSettingPlg');
+    var shipmentmethod_id = NovaPoshtaData.virtuemart_shipmentmethod_id;
+
     Joomla.loadOptions({
         GNZ11:{
             gnzlib_path_modules: "/libraries/GNZ11/assets/js/modules",
             Ajax:{
                 'siteUrl' : Joomla.getOptions('siteUrl'), //php=> $doc->addScriptOptions('siteUrl',JUri::root());
                 'csrf.token' : Joomla.getOptions('csrf.token'),
-                'isClient' : false, // если отправка на администратора
+                'isClient' : (!!NovaPoshtaData.administrator), // если отправка на администратора
             }
         }
     });
 
-    var NovaPoshtaData = Joomla.getOptions('NpSettingPlg');
-    var shipmentmethod_id = NovaPoshtaData.virtuemart_shipmentmethod_id;
-
-
-
 
     function cart_shipmentInit(){
-        addListener()
+        addListener();
+        if (NovaPoshtaData.administrator){
+            document.addEventListener("GNZ11Loaded", function () {
+                cityText_init();
+            });
+
+            // GNZ11Loaded
+
+
+        }
+
     }
 
     function addListener() {
@@ -26,6 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
         var $b = $('body');
         $b.on('change' , '#shipment_id_'+shipmentmethod_id , loadModal )
             .on('change' , '[name="novaposhta[serviceType]"]' , stritAutocomplite );
+
+
+
     }
     /*
 	* Поиск Улицы
@@ -97,9 +110,9 @@ document.addEventListener("DOMContentLoaded", function () {
         })
     }
 
-var VMUPS = {
-    Novaposhta :{}
-};
+    var VMUPS = {
+        Novaposhta :{}
+    };
     /*
     *Отправить запрос к API новой почты
     */
@@ -150,7 +163,7 @@ var VMUPS = {
             'option': 'com_ajax',
             'group' : 'vmshipment',
             'plugin': 'nova_pochta',
-            'format': 'raw',
+            'format': 'json',
             'virtuemart_shipmentmethod_id': shipmentmethod_id ,
             'opt'   : {
                 'task': 'loadWarehouses',
@@ -191,7 +204,7 @@ var VMUPS = {
         var gnz11 = new GNZ11();
         var AjaxSetting = {} ;
 
-        var NpSettingPlg = Joomla.getOptions('NpSettingPlg')
+        var NpSettingPlg = Joomla.getOptions('NpSettingPlg');
 
         var data = {
             'option': 'com_ajax',
@@ -204,6 +217,9 @@ var VMUPS = {
                 'task': 'getModalBody'
             }
         };
+
+        $('#cartModalBody').remove();
+
 
         gnz11.getModul('Ajax' , AjaxSetting ).then(function(Ajax){
             Ajax.send(data).then(function (res) {
@@ -236,17 +252,6 @@ var VMUPS = {
                             },200);
 
                             setChosen();
-
-
-                            /*gnz11.__loadModul.Chosen().then(function (a) {
-                                if ( +NpSettingPlg.city_celect_style ) {
-                                    $('#cityText').on('change' , {event} , loadWarehouses ).chosen();
-                                }else {
-                                    cityText_init();
-                                }
-                                $('#novaposhta_warehouses').on('change' , {event} , function (){}).chosen();
-                            });*/
-
                         },
                         beforeClose : function( instance, current , e ) {}
                     })
@@ -278,9 +283,7 @@ var VMUPS = {
     }
 
 
-    function OpenModal() {
-
-    }
+    function OpenModal() {}
 
     function cityText_init() {
         var $ = jQuery ;
@@ -325,6 +328,7 @@ var VMUPS = {
             source : sourceNovaposhtaCityText ,
             select : function(event, ui){
                 $('#cityRef').val(ui.item.DeliveryCity );
+                $('#novaposhta_Ref').val(ui.item.Ref );
                 loadWarehouses();
                 console.log(ui.item.Ref)
             },
@@ -334,14 +338,7 @@ var VMUPS = {
 
     };// end function
 
-    function	selectNovaposhtaCityText( event, ui ){
-        var $ = jQuery;
 
-        console.log( ui.item )
-
-        $('#cityRef').val(ui.item.DeliveryCity )
-
-    }// end function
     function	changeNovaposhtaCityText( event, ui ){
         console.log( ui.item )
 

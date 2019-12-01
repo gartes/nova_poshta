@@ -55,6 +55,32 @@
 			return self::$instance;
 		}#END FN
 		
+		/**
+		 * Html Разметка в бланке заказа Админ.
+		 * @param $shipinfo
+		 *
+		 * @return string
+		 *
+		 * @throws Exception
+		 * @since version
+		 */
+		public static function OrderShipmentHtmlBE($shipinfo){
+			$doc = JFactory::getDocument();
+			$doc->addScript( '/plugins/vmshipment/nova_pochta/assets/js/front-cart_shipment.js' );
+			$doc->addStyleSheet('/plugins/vmshipment/nova_pochta/assets/css/front-cart_shipment.css');
+			
+			JLoader::registerNamespace( 'GNZ11' , JPATH_LIBRARIES . '/GNZ11' , $reset = false , $prepend = false , $type = 'psr4' );
+			Js::instance();
+			$doc->addScriptOptions('siteUrl' , JUri::root() );
+			$doc->addScriptOptions('csrf.token' , \JSession::getFormToken() );
+			
+			$ret =  \Plg\Np\Html::OrderShipmentHtmlBE($shipinfo);
+			return $ret ;
+		}
+		
+		
+		
+		
 		public static function getSetting($virtuemart_shipmentmethod_id){
 		
 		}
@@ -62,6 +88,7 @@
 		
 		public static function setSetting(){
 			$opt = self::$options ;
+			$app = \JFactory::getApplication() ;
 			
 			
 			$doc = JFactory::getDocument();
@@ -69,7 +96,10 @@
 				'city_celect_style'=> $opt->city_celect_style ,
 				'form_style'=> $opt->form_style ,
 				'virtuemart_shipmentmethod_id'=> $opt->virtuemart_shipmentmethod_id ,
+				'administrator'=> $app->isClient('administrator') ,
 			]);
+			
+			
 			
 			
 		}
@@ -127,6 +157,7 @@
 			Js::instance();
 			$doc = JFactory::getDocument();
 			$doc->addScript( '/plugins/vmshipment/nova_pochta/assets/js/front-cart_shipment.js' );
+			$doc->addScript( '/plugins/vmshipment/nova_pochta/assets/js/form-element-city_select.js' );
 
 			$doc->addScriptOptions( 'NovaPoshta-cart' , [ 'virtuemart_shipmentmethod_id' => $plugin->virtuemart_shipmentmethod_id , ] );
 			$doc->addScriptOptions( 'siteUrl' , JUri::root() );

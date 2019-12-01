@@ -120,7 +120,7 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		}#END IF
 		
 		$opt = $app->input->get( 'opt' , [] , 'ARRAY' ) ;
-		$format = $app->input->get( 'format' , 'hrml' , 'STRING' ) ;
+		$format = $app->input->get( 'format' , 'html' , 'STRING' ) ;
 		
 		
 		$tagLanguage = JFactory::getLanguage()->getTag();
@@ -137,6 +137,12 @@ class JFormFieldWarehouseslist extends JFormFieldList
 			return $options ;
 		}#END IF
 		
+		if( $app->isClient('administrator') )
+		{
+			$opt['cityRef'] = $app->input->get('ref_city_delivery' , null ) ;
+			
+		
+		}#END IF
 		
 		
  	
@@ -148,6 +154,8 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		$shipmentMethod = $shipmentModel->getShipment();
 		
 		
+//		echo'<pre>';print_r( $opt );echo'</pre>'.__FILE__.' '.__LINE__;
+//		die(__FILE__ .' '. __LINE__ );
 		
 		
 		$Address = \Plg\Np\Api::getAddress( $shipmentMethod->apikey );
@@ -166,7 +174,6 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		{
 			$options[$datum->Ref] = $datum->{'Description'.$lp} .' '. $datum->{'SettlementTypeDescription'.$lp} ;
 		}#END FOREACH
-		
 		
 		
 		

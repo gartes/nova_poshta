@@ -13,6 +13,48 @@
 	class Html
 	{
 		
+		/**
+		 * @param $shipinfo
+		 *
+		 * @return string
+		 *
+		 * @throws \Exception
+		 * @since version
+		 */
+		public static function OrderShipmentHtmlBE($shipinfo){
+			
+			$app = \JFactory::getApplication() ;
+			$app->input->set('virtuemart_shipmentmethod_id' , $shipinfo->virtuemart_shipmentmethod_id );
+			
+			
+			$shipinfo->novaposhta = json_decode( $shipinfo->novaposhta ) ;
+			
+			
+			$app->input->set('ref_city' , $shipinfo->novaposhta->Ref  );
+			$app->input->set('ref_city_delivery' , $shipinfo->ref_city  );
+			
+			
+			
+			# Загрузить форму
+			$form = \JForm::getInstance( 'ModalBody', JPATH_PLUGINS.'/vmshipment/nova_pochta/forms/cartModalBody.xml');
+			$form->bind($shipinfo);
+			$viewData['formField'] =  $form->renderFieldset('courierAdress');
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			# Подключение слоя
+			$layout    = new \JLayoutFile( 'cartModalBody' ,JPATH_PLUGINS.'/vmshipment/nova_pochta/tmpl' );
+			return $layout->render($viewData);
+		}
+		
+		
+		
 		public static function loadWarehouses(){
 			$data = [];
 			$app = \JFactory::getApplication() ;

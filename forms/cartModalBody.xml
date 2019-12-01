@@ -8,6 +8,7 @@
 
         <fieldset name="courierAdress">
 
+
             <!-- Выбор города  open="openCityGlavpunkt" -->
             <field name="cityText"
                    type="citylist"
@@ -23,6 +24,7 @@
                    label="NOVA_POCHTA_CITY" />
             <!-- REF города получения getCities -->
             <field name="cityRef" type="hidden"  />
+
 
 
             <fields  name="novaposhta">
@@ -56,7 +58,7 @@
 
 
 
-
+                <field name="Ref" type="hidden"  />
                 <field name="service_types_variant" type="hidden" default="0" />
                 <field type="spacer" name="spacer_addr_rpc" showon="serviceType:0" label="NOVA_POCHTA_ADDR_RPC_SHORT" />
                 <!-- Улица: -->

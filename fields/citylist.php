@@ -64,14 +64,35 @@ class JFormFieldCitylist extends JFormFieldList
 	{
 		
 		self::getSetting();
-		
 		$setting = self::$settingPLG ;
+		
+		$app = \JFactory::getApplication() ;
+		$ref_city = $app->input->get('ref_city' , null ) ;
+		
+		$City = null ;
+		if( $ref_city )
+		{
+			list( $lp , $options ) = $this->getPrefix();
+			
+			
+			// echo'<pre>';print_r( $setting->apikey );echo'</pre>'.__FILE__.' '.__LINE__;
+			
+			$Address = \Plg\Np\Api::getAddress( $setting->apikey );
+			$CityList = $Address::getSettlements(['Ref'=> $ref_city]);
+			$City = $CityList->data[0]->{'Description'.$lp} ;
+//			echo'<pre>';print_r( $City );echo'</pre>'.__FILE__.' '.__LINE__;
+//			die(__FILE__ .' '. __LINE__ );
+		}#END IF
+		
+		
+		
+		
 		if( !$setting->city_celect_style )
 		{
 			return '<input type="text"
 						name="cityText"
 						id="cityText"
-						value=""
+						value="'.$City.'"
 						class="ac_Settlements cityText"
 						autocomplete="off">
 						
@@ -101,7 +122,9 @@ class JFormFieldCitylist extends JFormFieldList
 
 		// Initialize JavaScript field attributes.
 		$attr .= $this->onchange ? ' onchange="' . $this->onchange . '"' : '';
-
+		
+		
+		
 		// Get the field options.
 		$options = (array) $this->getOptions();
 
@@ -181,15 +204,7 @@ class JFormFieldCitylist extends JFormFieldList
 		$shipmentMethod = $shipmentModel->getShipment();
 		
 		
-		
-		$tagLanguage = JFactory::getLanguage()->getTag();
-		$lp = null ;
-		$options = [''=>'Виберіть місто...'] ;
-		if( $tagLanguage == 'ru-RU' )
-		{
-			$lp = 'Ru';
-			$options = [''=>'Выберите город...'] ;
-		}#END IF
+		list( $lp , $options ) = $this->getPrefix();
 		
 		
 		if( $format == 'raw' && $opt[ 'task' ] == 'loadWarehouses'  )
@@ -260,5 +275,25 @@ class JFormFieldCitylist extends JFormFieldList
 		}
 
 		return parent::__get($name);
+	}
+	
+	/**
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
+	protected function getPrefix (): array
+	{
+		$tagLanguage = JFactory::getLanguage()->getTag();
+		$lp          = null;
+		$options     = [ '' => 'Виберіть місто...' ];
+		if( $tagLanguage == 'ru-RU' )
+		{
+			$lp      = 'Ru';
+			$options = [ '' => 'Выберите город...' ];
+		}
+		
+		return [ $lp , $options ];#END IF
 	}
 }
