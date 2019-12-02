@@ -206,7 +206,14 @@
                     <option value="Other">NOVA_POCHTA_BACKWARD_DELIVERY_CARGO_TYPE_OTHER</option>
                 </field>
 
-
+                <!-- Целое число, количество мест отправления -->
+                <field name="RedeliveryString"
+                       type="text"
+                       default=""
+                       class="ac_Settlements"
+                       showon=""
+                       label="NOVA_POCHTA_REDELIVERY_STRING"
+                       description="NOVA_POCHTA_REDELIVERY_STRING_DESC"/>
 
 
 
