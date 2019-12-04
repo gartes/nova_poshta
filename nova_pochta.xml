@@ -6,7 +6,7 @@
     <authorUrl>google.com</authorUrl>
     <copyright>Copyright (C) 2004 - 2019 Gartes Team. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-    <version>0.0.11</version>
+    <version>0.0.12</version>
     <description>NOVA_POCHTA_PLUGIN_DESC</description>
     <files>
         <filename plugin="nova_pochta">nova_pochta.php</filename>

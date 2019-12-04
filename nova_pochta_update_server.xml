@@ -5,7 +5,7 @@
         <type>plugin</type>
         <folder>vmshipment</folder>
         <element>nova_pochta</element>
-        <version>0.0.11</version>
+        <version>0.0.12</version>
         <client>0</client>
         <infourl title="Joomla!">https://www.joomla.org/announcements/release-news/5765-joomla-3-9-6-release.html</infourl>
         <downloads>
