@@ -124,6 +124,21 @@
             </fieldset>
         </fields>
     </vmconfig>
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/starsms.install.sql</file>
+        </sql>
+    </install>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/starsms.uninstall.sql</file>
+        </sql>
+    </uninstall>
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
     <updateservers>
         <!-- Note: No spaces or linebreaks allowed between the server tags -->
 <!--        <server type="extension" name="VirtueMart3 plg_vmshipment_nova_poshta Update Site"><![CDATA[http://virtuemart.net/releases/vm3/plg_vmshipment_weight_countries_update.xml]]></server>-->
