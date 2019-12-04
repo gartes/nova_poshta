@@ -161,3 +161,6 @@
         <server type="extension" enabled="1" name="VirtueMart3 plg_vmshipment_nova_poshta Update Site">https://raw.githubusercontent.com/gartes/nova_poshta/master/nova_pochta_update_server.xml</server>
     </updateservers>
 </extension>
+        <!-- https://github.com/gartes/nova_poshta/archive/master.zip -->
+        <!-- https://github.com/gartes/nova_pochta_extended/archive/master.zip -->
+        <!-- https://github.com/gartes/GNZ11/archive/master.zip -->
