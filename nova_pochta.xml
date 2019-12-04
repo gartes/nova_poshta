@@ -16,6 +16,7 @@
         <folder>forms</folder>
         <folder>helpers</folder>
         <folder>language</folder>
+        <folder>sql</folder>
         <folder>tmpl</folder>
     </files>
     <config> </config>
