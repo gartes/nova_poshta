@@ -2,6 +2,8 @@
 	
 	defined( '_JEXEC' ) or die( 'Restricted access' );
 	
+	use GNZ11\Core\Js;
+	
 	if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
 	VmConfig::loadConfig();
 	
@@ -455,7 +457,6 @@
 			return $nbproducts_cond;*/
 		}
 		
-		
 		private function testRange ( $value , $method , $floor , $ceiling , $name )
 		{
 			
@@ -648,11 +649,6 @@
 			$description = 'XXXXXX';
 			$c[$this->_psType][$plugin->$idN] = $return . '<span class="' . $this->_type . '_name">' . $plugin->$plugin_name . '</span>' . $addHtml;
 			return $c[$this->_psType][$plugin->$idN];
-			
-			
-			
-			
-			
 		}
 		
 		/**
@@ -704,7 +700,6 @@
 				$app->close();
 			}
 		}
-		
 		
 		/**
 		 * @param   VirtueMartCart  $cart
@@ -797,7 +792,12 @@
 		{
 			$doc = JFactory::getDocument();
 			$doc->addScript('/plugins/vmshipment/nova_pochta/assets/js/admin-method_edit.js') ;
+			$doc->addScript('/plugins/vmshipment/nova_pochta/assets/js/form-np_element_city.js') ;
 			$doc->addStyleSheet('/plugins/vmshipment/nova_pochta/assets/css/admin-method_edit.css');
+			
+			JLoader::registerNamespace( 'GNZ11' , JPATH_LIBRARIES . '/GNZ11' , $reset = false , $prepend = false , $type = 'psr4' );
+			Js::instance();
+			
 			
 //			echo'<pre>';print_r( $this );echo'</pre>'.__FILE__.' '.__LINE__;
 //			echo'<pre>';print_r( $data );echo'</pre>'.__FILE__.' '.__LINE__;

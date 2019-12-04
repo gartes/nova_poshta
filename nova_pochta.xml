@@ -22,7 +22,9 @@
     <config> </config>
     <vmconfig>
         <fields name="params">
+
             <fieldset name="np">
+
                 <field name="apikey"
                        type="text"
                        required="true"
@@ -30,6 +32,21 @@
                        class="fld-c fld-b"
                        label="NOVA_POCHTA_APIKEY"
                        description="NOVA_POCHTA_APIKEY_DESC"/>
+<!--                город отправителя -->
+                <field name="city_sender"
+                       type="text"
+                       required="true"
+                       size="30"
+                       class="fld-c fld-b"
+                       label="NOVA_POCHTA_CITY_SENDER"
+                       description="NOVA_POCHTA_CITY_SENDER_DESC"/>
+                <field name="city_sender_ref"
+                       label="NOVA_POCHTA_CITY_SENDER_REF"
+                       size="40"
+                       class="fld-c fld-b"
+                       type="text" />
+
+
             </fieldset>
             <fieldset name="np_settingsd">
                 <field type="textarea" name="np_params_sender" label="Enter some text" />

@@ -101,9 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             "FindByString": request.term
                         }
                     };
-
-
-
                     queryNovaposhta(params).done(function (sdata) {
                         var obj = [];
                         $.each(sdata.data, function  (i,street){
@@ -275,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 loadWarehouses();
                 console.log(ui.item.Ref)
             },
-            // autocompleteselect : selectNovaposhtaCityText ,
+
             autocompletechange : changeNovaposhtaCityText ,
         })
 
@@ -288,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
  * Загрузка складов в городе.
  * @param Elem - Елемент в которы загружить склады
  */
-function loadWarehouses(Elem   ) {
+function loadWarehouses(  Elem   ) {
     var $ = jQuery ;
     var gnz11 = new GNZ11();
     var NovaPoshtaData = Joomla.getOptions('NpSettingPlg');

@@ -37,8 +37,6 @@
 		 */
 		public static $SenderAddress ;
 		
-		
-		
 		/**
 		 * helper constructor.
 		 * @throws Exception
@@ -88,9 +86,6 @@
 		{
 			self::$SenderAddress = $SenderAddress;
 		}
-		
-		
-		
 		
 		/**
 		 * @param   mixed  $CityRef
