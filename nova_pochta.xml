@@ -6,28 +6,21 @@
     <authorUrl>google.com</authorUrl>
     <copyright>Copyright (C) 2004 - 2019 Gartes Team. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
     <description>NOVA_POCHTA_PLUGIN_DESC</description>
-
     <files>
         <filename plugin="nova_pochta">nova_pochta.php</filename>
+        <filename>nova_pochta_update_server.xml</filename>
         <folder>assets</folder>
         <folder>fields</folder>
         <folder>forms</folder>
         <folder>helpers</folder>
         <folder>language</folder>
         <folder>tmpl</folder>
-
     </files>
-
-
     <config> </config>
-
     <vmconfig>
-
-
         <fields name="params">
-
             <fieldset name="np">
                 <field name="apikey"
                        type="text"
@@ -37,14 +30,9 @@
                        label="NOVA_POCHTA_APIKEY"
                        description="NOVA_POCHTA_APIKEY_DESC"/>
             </fieldset>
-
-
             <fieldset name="np_settingsd">
                 <field type="textarea" name="np_params_sender" label="Enter some text" />
-
             </fieldset>
-
-
             <fieldset name="np_setting">
                 <field name="city_celect_style"
                        type="radio"
@@ -74,12 +62,6 @@
 
 
             </fieldset>
-
-
-
-
-
-
             <fieldset name="template">
                 <field name="shipment_logos" type="vmfiles" multiple="true" directory="/images/virtuemart/shipment"
                         label="VMSHIPMENT_WEIGHT_COUNTRIES_LOGOS"
@@ -143,6 +125,7 @@
     </vmconfig>
     <updateservers>
         <!-- Note: No spaces or linebreaks allowed between the server tags -->
-        <server type="extension" name="VirtueMart3 plg_vmshipment_weight_countries Update Site"><![CDATA[http://virtuemart.net/releases/vm3/plg_vmshipment_weight_countries_update.xml]]></server>
+<!--        <server type="extension" name="VirtueMart3 plg_vmshipment_nova_poshta Update Site"><![CDATA[http://virtuemart.net/releases/vm3/plg_vmshipment_weight_countries_update.xml]]></server>-->
+        <server type="extension" name="VirtueMart3 plg_vmshipment_nova_poshta Update Site"><![CDATA[http://virtuemart.net/releases/vm3/plg_vmshipment_weight_countries_update.xml]]></server>
     </updateservers>
 </extension>
