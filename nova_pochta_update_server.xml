@@ -1,6 +1,6 @@
 <updates>
     <update>
-        <name>plg_vmshipment_nova_poshta</name>
+        <name>Shipment Nova Pochta</name>
         <description>plg_vmshipment_nova_poshta Desc</description>
         <element>nova_pochta</element>
         <type>plugin</type>
