@@ -37,8 +37,19 @@ document.addEventListener("DOMContentLoaded", function () {
     function addListener() {
         var $ = jQuery ;
         var $b = $('body');
+
+        $b.on('change', '[name="virtuemart_shipmentmethod_id"]' , function () {
+            var v = $(this).val();
+            if (v !== shipmentmethod_id ){
+                $('#cartModalBody').remove();
+            }
+        });
+
         $b.on('change' , '#shipment_id_'+shipmentmethod_id , loadModal )
             .on('change' , '[name="novaposhta[serviceType]"]' , stritAutocomplite );
+
+
+
 
         // Включить поддержку атозаполнения улиц на стороне админа
         if (NovaPoshtaData.administrator){
@@ -179,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     $('body').on('click' , 'i.auto_control.clean' , function () {
                         jQuery('[name="cityRef"]').val('');
                     });
+
 
                     return;
                 }
