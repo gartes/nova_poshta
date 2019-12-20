@@ -56,9 +56,16 @@
 		}
 		
 		
-		
+		/**
+		 * Подгрузка складов в городе
+		 * @return string
+		 *
+		 * @throws \Exception
+		 * @since version
+		 */
 		public static function loadWarehouses(){
 			$data = [];
+			
 			$app = \JFactory::getApplication() ;
 			$virtuemart_shipmentmethod_id = $app->input->get('virtuemart_shipmentmethod_id') ;
 			
@@ -73,7 +80,13 @@
 			$viewData['formField'] =  $form->renderFieldset('courierAdress');
 			# Подключение слоя
 			$layout    = new \JLayoutFile( 'cartModalBody' ,JPATH_PLUGINS.'/vmshipment/nova_pochta/tmpl' );
+			
+			
+			
 			return $layout->render($viewData);
+			
+			
+			
 		}
 		
 		

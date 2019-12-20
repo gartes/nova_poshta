@@ -18,17 +18,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function cart_shipmentInit(){
+        var $ = jQuery ;
         addListener();
 
         if (NovaPoshtaData.administrator){
             document.addEventListener("GNZ11Loaded", function () {
                 cityText_init();
-
             });
         }else{
             // Проверить отмеченный чекбокс и снять если отмеченно
             check_checked()
         }
+
+
+
     }
 
     function addListener() {
@@ -87,7 +90,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     $('<i />',{
                         class:'auto_control clean icon-cancel',
                         click:function(){
-                            $(this).prev('input').val('')
+                            $(this).prev('input').val('');
+
                         }
                     })
                 );
@@ -143,12 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var $ = jQuery ;
         var gnz11 = new GNZ11();
         var AjaxSetting = {} ;
-
         var NpSettingPlg = Joomla.getOptions('NpSettingPlg');
-
-        console.log(NpSettingPlg);
-
-
         var data = {
             'option': 'com_ajax',
             'group' : 'vmshipment',
@@ -176,6 +175,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     gnz11.checkBoxRadioInit();
                     gnz11.SHOWON.Init();
                     setChosen();
+                    $('[name="novaposhta[serviceType]"]').on('change' , getCost );
+                    $('body').on('click' , 'i.auto_control.clean' , function () {
+                        jQuery('[name="cityRef"]').val('');
+                    });
+
                     return;
                 }
                 gnz11.__loadModul.Fancybox().then(function(a){
@@ -270,7 +274,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 $('#cityRef').val(ui.item.DeliveryCity );
                 $('#novaposhta_Ref').val(ui.item.Ref );
                 loadWarehouses();
-                console.log(ui.item.Ref)
+
             },
 
             autocompletechange : changeNovaposhtaCityText ,
@@ -316,21 +320,6 @@ function loadWarehouses(  Elem   ) {
 
     var AjaxSetting = {} ;
 
-
-/*
-    if (cityRef.length){
-        $warehouses_ind.val(1)
-    }else{
-        $warehouses_ind.val(0)
-    }
-    $warehouses_ind.trigger('change');
-    */
-
-
-
-
-
-
     var data = {
         'option': (NovaPoshtaData.administrator?'com_virtuemart':'com_ajax'),
         'group' : 'vmshipment',
@@ -347,8 +336,6 @@ function loadWarehouses(  Elem   ) {
         data.task = 'loadWarehouses' ;
     }
 
-
-
     // loadWarehouses
     gnz11.getModul('Ajax' , AjaxSetting ).then(function(Ajax) {
         Ajax.send(data).then(function (res) {
@@ -356,22 +343,60 @@ function loadWarehouses(  Elem   ) {
                 alert('Error Load Warehouses Nova pochta');
                 return
             }
-
-
-
             WarehousesEl.empty();
             $.each(res.data.WarehousesList,function (i,a) {
                 $('<option />', { value : i, text  : a , }).appendTo(WarehousesEl);
             });
 
-            WarehousesEl.trigger('chosen:updated').trigger("liszt:updated");
 
+            WarehousesEl.trigger('chosen:updated').trigger("liszt:updated");
+            getCost();
         }, function (err) {
             console.error(err)
         })
     })
-
 }
+
+/**
+ * Расчет стоимости доставки
+ */
+getCost = function(){
+    var $ = jQuery ;
+    var gnz11 = new GNZ11();
+    var NovaPoshtaData = Joomla.getOptions('NpSettingPlg');
+    var cityRef =  $('[name="cityRef"]').val() ;
+    var serviceType =  $('[name="novaposhta[serviceType]"]:checked').val() ;
+
+    $('#documentPrice').remove();
+    if (!cityRef) {
+
+        return
+    }
+
+    var data = {
+        'option': (NovaPoshtaData.administrator?'com_virtuemart':'com_ajax'),
+        'group' : 'vmshipment',
+        'plugin': 'nova_pochta',
+        'format': 'json',
+        'virtuemart_shipmentmethod_id': NovaPoshtaData.virtuemart_shipmentmethod_id ,
+        'opt'   : {
+            'task': 'getCost',
+            'cityRef': cityRef ,
+            'serviceType': serviceType ,
+        }
+    };
+
+    var AjaxSetting = {} ;
+    gnz11.getModul('Ajax' , AjaxSetting ).then(function(Ajax) {
+        Ajax.send(data).then(function (res) {
+            $('#cartModalBody').append(res.data);
+            console.log(res.data)
+        })
+    })
+
+
+};
+
 
 /*
  *Отправить запрос к API новой почты
@@ -433,9 +458,6 @@ function sourceNovaposhtaCityText (request, response){
                 };
             })// end function
         });// end function
-
-
-        console.log( obj ) ;
         response( obj );
     }).fail(function () {alert('error');});
 }// end function

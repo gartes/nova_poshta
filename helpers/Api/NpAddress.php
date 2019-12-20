@@ -27,7 +27,7 @@
 		 *
 		 * @return \NovaPoshta\Models\DataContainerResponse
 		 *
-		 * @since version
+		 * @since 3.9
 		 */
 		public static function getWarehouses( $cityRef ){
 			$data = new \NovaPoshta\MethodParameters\Address_getWarehouses();
@@ -40,7 +40,7 @@
 		 * список городов
 		 * @return \NovaPoshta\Models\DataContainerResponse
 		 *
-		 * @since version
+		 * @since 3.9
 		 */
 		public static function getCityList( $param ){
 			$data = new \NovaPoshta\MethodParameters\Address_getCities();
@@ -55,7 +55,7 @@
 		/**
 		 * Вызвать метод getSettlements() - загрузить справочник населенных пунктов Украины
 		 *
-		 *
+		 * @since 3.9
 		 */
 		public static function getSettlements($param){
 			$data = new \NovaPoshta\MethodParameters\Address_getCities();

@@ -92,7 +92,7 @@ class JFormFieldCitylist extends JFormFieldList
 						class="ac_Settlements cityText"
 						autocomplete="off">
 						
-					<i class="auto_control clean icon-cancel" onclick="jQuery(this).prev(\'input\').val(\'\')"></i>
+					<i class="auto_control clean icon-cancel" onclick="jQuery(this).prev(\'input\').val(\'\');"></i>
 						
 						' ;
 		}#END IF

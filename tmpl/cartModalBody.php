@@ -11,6 +11,7 @@ extract ($displayData);
 	$app = \JFactory::getApplication() ;
 	$admin = $app->isClient('administrator') ;
 
+	
 ?>
 
 <div id="cartModalBody">

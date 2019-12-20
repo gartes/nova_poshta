@@ -212,15 +212,57 @@
 			return true ;
 		}
 		
-		
+		/**
+		 *
+		 *
+		 * @throws Exception
+		 * @since version
+		 */
+		public function getCost(){
+			$app                          = \JFactory::getApplication();
+			
+			$virtuemart_shipmentmethod_id = $app->input->get( 'virtuemart_shipmentmethod_id' , null , 'INT' );
+			if(  !$virtuemart_shipmentmethod_id )
+			{
+				throw new Exception('Err: Dont virtuemart shipmentmethod id In JFormFieldCitylist.' , 500 ) ;
+			}#END IF
+			
+			if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
+			\VmConfig::loadConfig();
+			$shipmentModel = \VmModel::getModel( 'Shipmentmethod' );
+			$shipmentModel->setId( $virtuemart_shipmentmethod_id );
+			$shipmentMethod = $shipmentModel->getShipment();
+			
+			$cart                        = \VirtueMartCart::getCart();
+			$cart->prepareCartData();
+			\Joomla\CMS\Plugin\PluginHelper::importPlugin('vmshipment' , 'nova_pochta');
+			$dispatcher = \JDispatcher::getInstance();
+			$returnValues = $dispatcher->trigger('getCosts', [$cart , $shipmentMethod , $cart->cartPrices  ]);
+			
+			foreach( $returnValues as $returnValue )
+			{
+				if( !isset( $returnValue['nova_pochta'] ) ) continue ; #END IF
+				$Value = $returnValue['nova_pochta'] ;
+			}#END FOREACH
+			
+			
+			$viewData['Cost'] = $Value->data[0]->Cost;
+			# Подключение слоя
+			$layout    = new \JLayoutFile( 'documentPrice' ,JPATH_PLUGINS.'/vmshipment/nova_pochta/tmpl' );
+			return $layout->render($viewData);
+		}
 		
 		/**
 		 * Подгрузка складов в городе
 		 * @return string
 		 *
+		 * @throws Exception
+		 * @since 3.9
 		 * @since version
 		 */
 		public function loadWarehouses(){
+			
+			
 			$ret =  \Plg\Np\Html::loadWarehouses();
 			return $ret ;
 		}

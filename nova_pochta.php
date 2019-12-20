@@ -3,7 +3,9 @@
 	defined( '_JEXEC' ) or die( 'Restricted access' );
 	
 	use GNZ11\Core\Js;
-	
+	use Joomla\CMS\Factory;
+	use Joomla\CMS\Date\Date;
+	use Joomla\CMS\Language\Text;
 	if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
 	VmConfig::loadConfig();
 	
@@ -48,6 +50,8 @@
 		 */
 		function __construct ( &$subject , $config )
 		{
+			
+			
 			
 			parent::__construct( $subject , $config );
 			$this->_loggable   = true;
@@ -127,13 +131,11 @@
 		 * @param   array   $order     The actual order saved in the DB
 		 *
 		 * @return mixed Null when this method was not selected, otherwise true
+		 * @throws Exception
 		 * @since 3.9
 		 */
 		function plgVmConfirmedOrder ( VirtueMartCart $cart , $order )
 		{
-			
-			
-			
 			
 			if( !( $method = $this->getVmPluginMethod( $order[ 'details' ][ 'BT' ]->virtuemart_shipmentmethod_id ) ) )
 			{
@@ -150,12 +152,6 @@
 			$app = \JFactory::getApplication() ;
 			
 			
-//			echo'<pre>';print_r( $order );echo'</pre>'.__FILE__.' '.__LINE__;
-//			echo'<pre>';print_r( $app->input );echo'</pre>'.__FILE__.' '.__LINE__;
-//
-//			die( __FILE__ . ' ' . __LINE__ );
-			
-			
 			$values[ 'virtuemart_order_id' ]          = $order[ 'details' ][ 'BT' ]->virtuemart_order_id;
 			$values[ 'order_number' ]                 = $order[ 'details' ][ 'BT' ]->order_number;
 			$values[ 'virtuemart_shipmentmethod_id' ] = $order[ 'details' ][ 'BT' ]->virtuemart_shipmentmethod_id;
@@ -166,11 +162,6 @@
 			$novaposhta = $app->input->get('novaposhta' , [] , 'ARRAY' ) ;
 			$values[ 'ref_city' ]         = $app->input->get('cityRef' , false ) ;
 			$values[ 'novaposhta' ]       = json_encode($novaposhta) ;
-			
-			
-			
-			
-			
 			
 			$costs = $this->getCosts( $cart , $method , $cart->cartPrices );
 			if( !empty( $costs ) )
@@ -295,11 +286,50 @@
 		 * @param                   $method
 		 * @param                   $cart_prices
 		 *
-		 * @return int
+		 * @return array
+		 * @throws Exception
 		 * @since 3.9
 		 */
 		function getCosts ( VirtueMartCart $cart , $method , $cart_prices )
 		{
+			$app                          = \JFactory::getApplication();
+			$opt = $app->input->get( 'opt' , [] , 'ARRAY' ) ;
+			
+			$weight = null ;
+			
+			if( !isset( $opt['cityRef'] ) ) return 0.0; #END IF
+			
+			foreach( $cart->products as $product )
+			{
+				$weight += $product->product_weight ;
+				
+			}#END FOREACH
+			
+			if( $weight < 0.1 ) $weight = 0.1 ;  #END IF
+			
+			$date = new Date('now +1 day');
+			$DateTime = $date->format('d.m.Y', false, false) ;
+			
+			$opt['CitySender'] = $method->city_sender_ref ;
+			$opt['salesPrice'] = $cart_prices['salesPrice'] ;
+			$opt['weight'] = $weight ;
+			$opt['DateTime'] = $DateTime  ;
+			
+			
+			# Получить стоимость доставки
+			$InternetDocument = \Plg\Np\Api::getInternetDocument( $method->apikey );
+			$DocumentPrice = $InternetDocument::getDocumentPrice( $opt );
+			
+			
+			
+			return ['nova_pochta'=>$DocumentPrice] ;
+			
+			
+			echo'<pre>';print_r( $DocumentPrice );echo'</pre>'.__FILE__.' '.__LINE__;
+//			die(__FILE__ .' '. __LINE__ );
+			/*echo'<pre>';print_r(  $DocumentPrice );echo'</pre>'.__FILE__.' '.__LINE__;
+			echo'<pre>';print_r(  $method->apikey );echo'</pre>'.__FILE__.' '.__LINE__;
+			die(__FILE__ .' '. __LINE__ );*/
 			
 			if( $method->free_shipment && $cart_prices[ 'salesPrice' ] >= $method->free_shipment )
 			{
@@ -659,6 +689,8 @@
 		 */
 		public function onAjaxNova_pochta()
 		{
+			
+			
 			if( !JSession::checkToken( 'get' ) ) exit( 'ERR: check Token!!!' );
 			$app = JFactory::getApplication();
 			$opt = $app->input->get( 'opt' , [] , 'ARRAY' );

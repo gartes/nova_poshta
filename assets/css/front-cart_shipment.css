@@ -238,6 +238,13 @@ input#novaposhta_recipientAddressName {
 #cartModalBody button.btn.btn-small.button-apply.btn-success {
     background-image: linear-gradient(#fff0, #ddd0);
 }
+#documentPrice{
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+    border-top: 1px solid #ccc;
+    text-align: right;
+}
 
 
 

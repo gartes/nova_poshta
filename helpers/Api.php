@@ -23,6 +23,7 @@
 		
 		public static $ApiNpConfig = null;
 		public static $ApiNpCounterparty = null;
+		public static $ApiNpInternetDocument = null;
 		
 		
 		/**
@@ -57,6 +58,33 @@
 		}
 		
 		/**
+		 * API Экспресс-накладная
+		 * Работа с экспресс-накладными
+		 * @param $ApiKey
+		 *
+		 *
+		 * @return Api\NpInternetDocument
+		 * @throws Exception
+		 * @since version
+		 */
+		public static function  getInternetDocument ( $ApiKey )
+		{
+			if( !self::$apiKey ){
+				if( !$ApiKey )
+				{
+					throw new Exception( 'Failed to start application Dont ApiKey' , 500 );
+				}
+				self::initApiNpConfig( $ApiKey );
+			}
+			
+			if( !self::$ApiNpInternetDocument ){
+				self::$ApiNpInternetDocument = new \Plg\Np\Api\NpInternetDocument() ;
+			}
+			return self::$ApiNpInternetDocument ;
+			
+		}
+		
+		/**
 		 * @param $ApiKey
 		 *
 		 *
@@ -80,6 +108,7 @@
 			return self::$ApiNpCounterparty ;
 			
 		}
+		
 		/**
 		 * @param $ApiKey
 		 *
@@ -105,10 +134,6 @@
 			
 		}
 	
-	
-		
-		
-		
 		/**
 		 * Получим контактных персон для контрагентов
 		 * @param $counterpartySenderRef

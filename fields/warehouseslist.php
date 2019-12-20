@@ -187,6 +187,13 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		
 		
 		
+		/*echo'<pre>';print_r( $returnValues );echo'</pre>'.__FILE__.' '.__LINE__;
+		echo'<pre>';print_r( $cart );echo'</pre>'.__FILE__.' '.__LINE__;
+		echo'<pre>';print_r( $DocumentPrice );echo'</pre>'.__FILE__.' '.__LINE__;
+		echo'<pre>';print_r( $opt['cityRef'] );echo'</pre>'.__FILE__.' '.__LINE__;
+		echo'<pre>';print_r( $shipmentMethod->city_sender_ref );echo'</pre>'.__FILE__.' '.__LINE__;
+		die(__FILE__ .' '. __LINE__ );*/
+		
 		if( !count($WarehousesList->data) &&  $format    == 'json' )
 		{
 			echo new JResponseJson(null , JText::_('NOVA_POCHTA_WAREHOUSES_LIST_Z_COUNT'));
@@ -209,6 +216,9 @@ class JFormFieldWarehouseslist extends JFormFieldList
 				'WarehousesList'=>$options ,
 				'info'=> json_encode( $WarehousesList->info )  ,
 			];
+			
+			
+			
 			echo new JResponseJson( $ret  );
 			$app->close();
 			
