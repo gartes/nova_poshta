@@ -90,7 +90,7 @@
 				'id' => 'int(1) UNSIGNED NOT NULL AUTO_INCREMENT' ,
 				'virtuemart_order_id' => 'int(11) UNSIGNED' ,
 				'order_number' => 'char(32)' ,
-				'ref_city' => 'char(32)' ,
+				'ref_city' => 'char(36)' ,
 				'novaposhta' => 'text ' ,
 				'virtuemart_shipmentmethod_id' => 'mediumint(1) UNSIGNED' ,
 				'shipment_name' => 'varchar(5000)' ,
@@ -150,8 +150,10 @@
 			
 			
 			$app = \JFactory::getApplication() ;
+			// 8d5a980d-391c-11dd-90d9-001a92567626 - киев
 			
-			
+		//	echo'<pre>';print_r( $app->input );echo'</pre>'.__FILE__.' '.__LINE__;
+		// 	die(__FILE__ .' '. __LINE__ );
 			$values[ 'virtuemart_order_id' ]          = $order[ 'details' ][ 'BT' ]->virtuemart_order_id;
 			$values[ 'order_number' ]                 = $order[ 'details' ][ 'BT' ]->order_number;
 			$values[ 'virtuemart_shipmentmethod_id' ] = $order[ 'details' ][ 'BT' ]->virtuemart_shipmentmethod_id;
@@ -271,11 +273,11 @@
 			
 			
 			
-			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_SHIPPING_NAME' , $shipinfo->shipment_name );
-			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_WEIGHT' , $shipinfo->order_weight . ' ' . ShopFunctions::renderWeightUnit( $shipinfo->shipment_weight_unit ) );
-			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_COST' , $currency->priceDisplay( $shipinfo->shipment_cost ) );
-			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_PACKAGE_FEE' , $currency->priceDisplay( $shipinfo->shipment_package_fee ) );
-			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_TAX' , $taxDisplay );
+//			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_SHIPPING_NAME' , $shipinfo->shipment_name );
+//			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_WEIGHT' , $shipinfo->order_weight . ' ' . ShopFunctions::renderWeightUnit( $shipinfo->shipment_weight_unit ) );
+//			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_COST' , $currency->priceDisplay( $shipinfo->shipment_cost ) );
+//			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_PACKAGE_FEE' , $currency->priceDisplay( $shipinfo->shipment_package_fee ) );
+//			$html .= $this->getHtmlRowBE( 'WEIGHT_COUNTRIES_TAX' , $taxDisplay );
 			$html .= '</table>' . "\n";
 			
 			return $html;

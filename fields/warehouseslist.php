@@ -173,7 +173,6 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		}#END IF
 		
 		
-		
 		if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
 		VmConfig::loadConfig();
 		$shipmentModel = VmModel::getModel( 'Shipmentmethod' );
@@ -182,9 +181,18 @@ class JFormFieldWarehouseslist extends JFormFieldList
 		
 		
 		$Address = \Plg\Np\Api::getAddress( $shipmentMethod->apikey );
-		$WarehousesList = $Address::getWarehouses($opt['cityRef']);
+//		$WarehousesList = $Address::getWarehouses( '8d5a980d-391c-11dd-90d9-001a92567626' );
+//
 		
 		
+		//echo'<pre>';print_r( $WarehousesList );echo'</pre>'.__FILE__.' '.__LINE__;
+		
+//		$WarehousesList = $Address::getWarehouses('8d5a980d-391c-11dd-90d9-001a9256');
+//		$WarehousesList = $Address::getSettlements('8d5a980d-391c-11dd-90d9-001a9256');
+//
+//		echo'<pre>';print_r( $opt['cityRef'] );echo'</pre>'.__FILE__.' '.__LINE__;
+//		echo'<pre>';print_r( $WarehousesList );echo'</pre>'.__FILE__.' '.__LINE__;
+	//	die(__FILE__ .' '. __LINE__ );
 		
 		
 		/*echo'<pre>';print_r( $returnValues );echo'</pre>'.__FILE__.' '.__LINE__;

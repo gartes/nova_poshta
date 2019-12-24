@@ -132,6 +132,8 @@
 			$doc->addScriptOptions('siteUrl' , JUri::root() );
 			$doc->addScriptOptions('csrf.token' , \JSession::getFormToken() );
 			
+			
+			
 			$ret =  \Plg\Np\Html::OrderShipmentHtmlBE($shipinfo);
 			return $ret ;
 		}
