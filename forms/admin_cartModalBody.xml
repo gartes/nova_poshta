@@ -211,7 +211,7 @@
                        type="text"
                        default=""
                        class="ac_Settlements"
-                       showon=""
+                       showon="BackwardDelivery:1"
                        label="NOVA_POCHTA_REDELIVERY_STRING"
                        description="NOVA_POCHTA_REDELIVERY_STRING_DESC"/>
 

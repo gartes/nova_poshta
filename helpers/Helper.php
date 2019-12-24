@@ -36,6 +36,10 @@
 		 * @var Helper
 		 */
 		public static $SenderAddress ;
+		/**
+		 * @var string Фамилия + Имя получателя
+		 */
+		public static $RecipientText ;
 		
 		/**
 		 * helper constructor.
@@ -103,6 +107,14 @@
 		public static function setWarehousesRef ( $WarehousesRef )
 		{
 			self::$WarehousesRef = $WarehousesRef;
+		}#END FN
+		/**
+		 * @param   mixed  $WarehousesRef
+		 * @since 3.9
+		 */
+		public static function setRecipientText ( $RecipientText )
+		{
+			self::$RecipientText = $RecipientText;
 		}#END FN
 		
 		

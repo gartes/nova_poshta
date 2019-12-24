@@ -123,6 +123,7 @@
 		}
 		
 		/**
+		 * Создание подтвержденного заказа.
 		 * This event is fired after the order has been stored; it gets the shipment method-
 		 * specific data.
 		 *
@@ -226,13 +227,18 @@
 		}
 		
 		/**
+		 * Информация о доставке в бланке заказа Админ панель
 		 * @param $virtuemart_order_id
 		 *
 		 * @return string
 		 * @throws Exception
+		 * @since 3.9
 		 */
 		function getOrderShipmentHtml ( $virtuemart_order_id )
 		{
+			
+			
+			
 			
 			
 			$db = JFactory::getDBO();
@@ -252,6 +258,10 @@
 			$taxDisplay = is_array( $tax ) ? $tax[ 'calc_value' ] . ' ' . $tax[ 'calc_value_mathop' ] : $shipinfo->tax_id;
 			$taxDisplay = ( $taxDisplay == -1 ) ? vmText::_( 'COM_VIRTUEMART_PRODUCT_TAX_NONE' ) : $taxDisplay;
 			
+			$modelOrder = VmModel::getModel ('orders');
+			$vmorder = $modelOrder->getOrder ($virtuemart_order_id);
+			$vmorderST = $vmorder['details']['ST'] ;
+			
 			$html = '<table class="adminlist table">' . "\n";
 			$html .= $this->getHtmlHeaderBE();
 			
@@ -259,14 +269,26 @@
 			$app = \JFactory::getApplication() ;
 			$app->input->set('novaposhta' , $shipinfo->novaposhta );
 			
+			
 			$this->Helper::setCityRef( $shipinfo->ref_city );
 			$this->Helper::setWarehousesRef( $shipinfo->novaposhta->warehouses );
 			$this->Helper::setCitySender( $shipinfo->novaposhta->CitySender );
 			$this->Helper::setSenderAddress( $shipinfo->novaposhta->SenderAddress );
 			
+			$RecipientText = $vmorderST->last_name.(!empty($vmorderST->last_name)?' ':'' ).$vmorderST->first_name ;
+			$phone = (!empty($vmorderST->phone_1)?$vmorderST->phone_1:$vmorderST->phone_2) ;
 			
 			
-			echo'<pre>';print_r( $shipinfo );echo'</pre>'.__FILE__.' '.__LINE__;
+//			echo'<pre>';print_r( $vmorderST->phone_1 );echo'</pre>'.__FILE__.' '.__LINE__;
+//			die(__FILE__ .' '. __LINE__ );
+			
+			$shipinfo->novaposhta->RecipientText = trim( $RecipientText ) ;
+			$shipinfo->novaposhta->RecipientsPhone = trim( $phone ) ;
+			//$this->Helper::setRecipientText( trim( $RecipientText ) );
+			
+			
+			
+//			echo'<pre>';print_r( $shipinfo );echo'</pre>'.__FILE__.' '.__LINE__;
 			
 			$html .= $this->Helper::OrderShipmentHtmlBE($shipinfo) ;
 			
@@ -684,58 +706,6 @@
 		}
 		
 		/**
-		 * Точка входа AJAX
-		 *
-		 * @throws Exception
-		 * @since version
-		 */
-		public function onAjaxNova_pochta()
-		{
-			
-			
-			if( !JSession::checkToken( 'get' ) ) exit( 'ERR: check Token!!!' );
-			$app = JFactory::getApplication();
-			$opt = $app->input->get( 'opt' , [] , 'ARRAY' );
-			$virtuemart_shipmentmethod_id = $app->input->get( 'virtuemart_shipmentmethod_id' , null , 'INT' );
-			
-			if( $virtuemart_shipmentmethod_id )
-			{
-				$Method = $this->getPluginMethod( $virtuemart_shipmentmethod_id ) ;
-				$this->Helper::setPluginSetting($Method);
-			}#END IF
-			
-			
-			
-			
-			if( !isset( $opt[ 'task' ] ) ) return; #END IF
-			if( !method_exists( $this->Helper , $opt[ 'task' ] ) )
-			{
-				echo new JResponseJson( null , JText::_( 'NOVA_POCHTA_MY_TASK_ERROR' ) , true );
-				$app->close();
-			} #END IF
-			try
-			{
-				$res = $this->Helper->{$opt[ 'task' ]}();
-				echo new JResponseJson( $res );
-				$app->close();
-			}
-			catch( Exception $e )
-			{
-				// Executed only in PHP 5, will not be reached in PHP 7
-				echo new JResponseJson( null , $e->getMessage() , true );
-				$app->close();
-				
-				
-			}
-			catch( Throwable $e )
-			{
-				// Executed only in PHP 7, will not match in PHP 5
-				echo new JResponseJson( null , $e->getMessage() , true );
-				$app->close();
-			}
-		}
-		
-		/**
 		 * @param   VirtueMartCart  $cart
 		 * @param   array           $cart_prices
 		 * @param                   $cart_prices_name
@@ -765,7 +735,6 @@
 			
 			return $this->onCheckAutomaticSelected( $cart , $cart_prices , $shipCounter );
 		}
-		
 		
 		/**
 		 * Вывод в корзине при оформлении заказа
@@ -820,8 +789,15 @@
 			return $this->declarePluginParams( 'shipment' , $name , $id , $dataOld );
 		}
 		
-		
-		
+		/**
+		 * Настройка способа доаставки
+		 * @param $data
+		 *
+		 * @return bool|null
+		 *
+		 * @throws Exception
+		 * @since 3.9
+		 */
 		function plgVmDeclarePluginParamsShipmentVM3 ( &$data )
 		{
 			$doc = JFactory::getDocument();
@@ -934,6 +910,57 @@
 			
 		}
 		
+		/**
+		 * Точка входа AJAX
+		 *
+		 * @throws Exception
+		 * @since version
+		 */
+		public function onAjaxNova_pochta()
+		{
+			
+			
+			if( !JSession::checkToken( 'get' ) ) exit( 'ERR: check Token!!!' );
+			$app = JFactory::getApplication();
+			$opt = $app->input->get( 'opt' , [] , 'ARRAY' );
+			$virtuemart_shipmentmethod_id = $app->input->get( 'virtuemart_shipmentmethod_id' , null , 'INT' );
+			
+			if( $virtuemart_shipmentmethod_id )
+			{
+				$Method = $this->getPluginMethod( $virtuemart_shipmentmethod_id ) ;
+				$this->Helper::setPluginSetting($Method);
+			}#END IF
+			
+			
+			
+			
+			if( !isset( $opt[ 'task' ] ) ) return; #END IF
+			if( !method_exists( $this->Helper , $opt[ 'task' ] ) )
+			{
+				echo new JResponseJson( null , JText::_( 'NOVA_POCHTA_MY_TASK_ERROR' ) , true );
+				$app->close();
+			} #END IF
+			try
+			{
+				$res = $this->Helper->{$opt[ 'task' ]}();
+				echo new JResponseJson( $res );
+				$app->close();
+			}
+			catch( Exception $e )
+			{
+				// Executed only in PHP 5, will not be reached in PHP 7
+				echo new JResponseJson( null , $e->getMessage() , true );
+				$app->close();
+				
+				
+			}
+			catch( Throwable $e )
+			{
+				// Executed only in PHP 7, will not match in PHP 5
+				echo new JResponseJson( null , $e->getMessage() , true );
+				$app->close();
+			}
+		}
 		
 		
 		

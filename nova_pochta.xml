@@ -22,7 +22,7 @@
     <config> </config>
     <vmconfig>
         <fields name="params">
-
+            <fields addfieldpath="/plugins/vmshipment/nova_pochta/fields" />
             <fieldset name="np">
 
                 <field name="apikey"
@@ -41,11 +41,18 @@
                        label="NOVA_POCHTA_CITY_SENDER"
                        description="NOVA_POCHTA_CITY_SENDER_DESC"/>
                 <field name="city_sender_ref"
+                       type="text"
                        label="NOVA_POCHTA_CITY_SENDER_REF"
                        size="40"
-                       class="fld-c fld-b"
-                       type="text" />
-
+                       readonly="true"
+                       class="fld-c fld-b" />
+                <!-- Список складов -->
+                <field name="warehouses"
+                       type="warehouseslist"
+                       class="warehouses"
+                       showon="serviceType:1"
+                       onchange=""
+                       label="NOVA_POCHTA_WAREHOUSES" />
 
             </fieldset>
             <fieldset name="np_settingsd">
@@ -158,7 +165,7 @@
     </update>
     <updateservers>
         <!-- Note: No spaces or linebreaks allowed between the server tags -->
-        <server type="extension" enabled="1" name="VirtueMart3 plg_vmshipment_nova_poshta Update Site">https://raw.githubusercontent.com/gartes/nova_poshta/master/nova_pochta_update_server.xml</server>
+        <server type="extension" enabled="1" name="PLG Shipment Nova Pochta">https://raw.githubusercontent.com/gartes/nova_poshta/master/nova_pochta_update_server.xml</server>
     </updateservers>
 </extension>
         <!-- https://github.com/gartes/nova_poshta/archive/master.zip -->

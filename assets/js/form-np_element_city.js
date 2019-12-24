@@ -1,5 +1,5 @@
 window.np_element_city = {
-    init : function ( inputText ) {
+    init : function ( inputText , taskSelect ) {
         var $ = jQuery;
         var inpText = $(inputText) ;
         var id = inpText.attr('id') ;
@@ -20,10 +20,13 @@ window.np_element_city = {
                 source : np_element_city.source ,
 
                 select : function(event, ui){
-                    inpText.val(ui.item.DeliveryCity );
-                    $('#'+id_REF ).val(ui.item.Ref );
-                   //  loadWarehouses();
-                    console.log(ui.item.Ref)
+
+                    console.log(ui)
+
+                    inpText.val(ui.item.label );
+                    $('#'+id_REF ).val( ui.item.DeliveryCity );
+                    //loadWarehouses();
+                    if (typeof taskSelect === 'function') taskSelect( ui.item.DeliveryCity );
                 },
                //  autocompletechange : changeNovaposhtaCityText ,
             })
