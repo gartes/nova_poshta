@@ -967,3 +967,13 @@
 	}
 	
 	// No closing tag
+/**
+ *
+   @media (max-width: 768px)
+   .yjnewspopItem.col-sm-4 {
+      width: 33.333333333% !important;
+   }
+  }
+ *
+ *
+ */
